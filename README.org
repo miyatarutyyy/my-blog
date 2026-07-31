@@ -1,0 +1,13 @@
+#+TITLE: README.org
+#+AUTHOR: miyatarutyyy
+
+* my-blog
+
+Next.js について学習するために作られたブログサイトです
+
+** 技術スタック
+
+このプロジェクトで使われている言語・フレームワーク・主要ライブラリです
+
+- **FRONTEND: ** HTML, CSS, TypeScript, React, Next.js
+  
