@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 
 import { orgToHtml } from '@/lib/org'
-import { getPostSlugs, getPostSource, } from '@/lib/posts'
+import { getPost, getPostSlugs } from '@/lib/posts'
 
 type BlogPostPageProps = {
   params: Promise<{
@@ -31,22 +31,29 @@ export default async function BlogPostPage({
 }: BlogPostPageProps) {
   const { slug } = await params
 
-  const source = await getPostSource(slug)
+  const post = await getPost(slug)
 
-  if (source == null) {
+  if (post == null) {
     notFound()
   }
 
-
-  const html = await orgToHtml(source)
+  const html = await orgToHtml(post.source)
 
   return (
     <main>
-      <article
-        dangerouslySetInnerHTML={{
-          __html: html,
-        }}
-      />
+      <article>
+        <header>
+          <h1>{post.title}</h1>
+          {post.date ? (
+            <time dateTime={post.date}>{post.date}</time>
+          ) : null}
+        </header>
+        <div
+          dangerouslySetInnerHTML={{
+            __html: html,
+          }}
+        />
+      </article>
     </main>
   )
 }

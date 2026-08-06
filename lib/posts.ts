@@ -1,3 +1,8 @@
+/*
+ * ページの取得や詳細プロパティの読取などの関数はここに
+ * ページの表示などは各 page.tsx にて
+ */
+
 import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
 
@@ -11,6 +16,10 @@ export type PostListItem = {
   slug: string
   title: string
   date: string
+}
+
+export type Post = PostListItem & {
+  source: string
 }
 
 /**
@@ -36,27 +45,39 @@ export async function getPosts(): Promise<PostListItem[]> {
 
   const posts = await Promise.all(
     slugs.map(async (slug) => {
-      const source = await getPostSource(slug)
-
-      if (source == null) {
-        return null
-      }
-
-      return {
-        slug,
-        title: getOrgKeyword(source, 'TITLE') ?? slug,
-        date: getOrgKeyword(source, 'DATE') ?? '',
-      }
+      return getPost(slug)
     }),
   )
 
   return posts
-    .filter((post): post is PostListItem => {
+    .filter((post): post is Post => {
       return post != null
     })
+    .map((post) => ({
+      slug: post.slug,
+      title: post.title,
+      date: post.date,
+    }))
     .sort((a, b) => {
       return b.date.localeCompare(a.date)
     })
+}
+
+export async function getPost(
+  slug: string,
+): Promise<Post | null> {
+  const source = await getPostSource(slug)
+
+  if (source == null) {
+    return null
+  }
+
+  return {
+    slug,
+    title: getOrgKeyword(source, 'TITLE') ?? slug,
+    date: getOrgKeyword(source, 'DATE') ?? '',
+    source,
+  }
 }
 
 /**
