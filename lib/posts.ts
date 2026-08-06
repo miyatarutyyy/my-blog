@@ -3,24 +3,24 @@
  * ページの表示などは各 page.tsx にて
  */
 
-import { readdir, readFile } from 'node:fs/promises'
-import path from 'node:path'
+import { readdir, readFile } from "node:fs/promises";
+import path from "node:path";
 
 /**
  * cwd (current working directory)
  * Node.js を実行したときの作業ディレクトリを指す
  */
-const postsDirectory = path.join(process.cwd(), 'content')
+const postsDirectory = path.join(process.cwd(), "content");
 
 export type PostListItem = {
-  slug: string
-  title: string
-  date: string
-}
+  slug: string;
+  title: string;
+  date: string;
+};
 
 export type Post = PostListItem & {
-  source: string
-}
+  source: string;
+};
 
 /**
  * contentディレクトリにある.orgファイルから、
@@ -29,29 +29,29 @@ export type Post = PostListItem & {
 export async function getPostSlugs(): Promise<string[]> {
   const entries = await readdir(postsDirectory, {
     withFileTypes: true,
-  })
+  });
 
   return entries
     .filter((entry) => {
-      return entry.isFile() && entry.name.endsWith('.org')
+      return entry.isFile() && entry.name.endsWith(".org");
     })
     .map((entry) => {
-      return entry.name.replace(/\.org$/, '')
-    })
+      return entry.name.replace(/\.org$/, "");
+    });
 }
 
 export async function getPosts(): Promise<PostListItem[]> {
-  const slugs = await getPostSlugs()
+  const slugs = await getPostSlugs();
 
   const posts = await Promise.all(
     slugs.map(async (slug) => {
-      return getPost(slug)
-    }),
-  )
+      return getPost(slug);
+    })
+  );
 
   return posts
     .filter((post): post is Post => {
-      return post != null
+      return post != null;
     })
     .map((post) => ({
       slug: post.slug,
@@ -59,25 +59,23 @@ export async function getPosts(): Promise<PostListItem[]> {
       date: post.date,
     }))
     .sort((a, b) => {
-      return b.date.localeCompare(a.date)
-    })
+      return b.date.localeCompare(a.date);
+    });
 }
 
-export async function getPost(
-  slug: string,
-): Promise<Post | null> {
-  const source = await getPostSource(slug)
+export async function getPost(slug: string): Promise<Post | null> {
+  const source = await getPostSource(slug);
 
   if (source == null) {
-    return null
+    return null;
   }
 
   return {
     slug,
-    title: getOrgKeyword(source, 'TITLE') ?? slug,
-    date: getOrgKeyword(source, 'DATE') ?? '',
+    title: getOrgKeyword(source, "TITLE") ?? slug,
+    date: getOrgKeyword(source, "DATE") ?? "",
     source,
-  }
+  };
 }
 
 /**
@@ -85,35 +83,24 @@ export async function getPost(
  *
  * 記事が存在しない場合はnullを返す。
  */
-export async function getPostSource(
-  slug: string,
-): Promise<string | null> {
+export async function getPostSource(slug: string): Promise<string | null> {
   // 「../」などを含む不正なslugを拒否する
   if (!/^[a-zA-Z0-9_-]+$/.test(slug)) {
-    return null
+    return null;
   }
 
-  const filePath = path.join(
-    postsDirectory,
-    `${slug}.org`,
-  )
+  const filePath = path.join(postsDirectory, `${slug}.org`);
 
   try {
-    return await readFile(filePath, 'utf8')
+    return await readFile(filePath, "utf8");
   } catch {
-    return null
+    return null;
   }
 }
 
-function getOrgKeyword(
-  source: string,
-  keyword: string,
-): string | null {
-  const pattern = new RegExp(
-    `^#\\+${keyword}:\\s*(.+)$`,
-    'im',
-  )
-  const match = source.match(pattern)
+function getOrgKeyword(source: string, keyword: string): string | null {
+  const pattern = new RegExp(`^#\\+${keyword}:\\s*(.+)$`, "im");
+  const match = source.match(pattern);
 
-  return match?.[1]?.trim() ?? null
+  return match?.[1]?.trim() ?? null;
 }

@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import Link from "next/link";
 
 export default function BlogPostNotFound() {
   return (
@@ -9,5 +9,5 @@ export default function BlogPostNotFound() {
         <Link href="/blog">Back to blog index</Link>
       </p>
     </main>
-  )
+  );
 }

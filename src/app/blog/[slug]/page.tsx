@@ -1,52 +1,48 @@
-import { notFound } from 'next/navigation'
+import { notFound } from "next/navigation";
 
-import { orgToHtml } from '@/lib/org'
-import { getPost, getPostSlugs } from '@/lib/posts'
+import { orgToHtml } from "@/lib/org";
+import { getPost, getPostSlugs } from "@/lib/posts";
 
 type BlogPostPageProps = {
   params: Promise<{
-    slug: string
-  }>
-}
+    slug: string;
+  }>;
+};
 
 /*
  * slug の一覧を返却
  */
 export async function generateStaticParams() {
-  const slugs = await getPostSlugs()
+  const slugs = await getPostSlugs();
 
   return slugs.map((slug) => ({
     slug,
-  }))
+  }));
 }
 
 /*
  * generateStaticParams() が返さなかった slug へのアクセス
  * これを 404 として処理
  */
-export const dynamicParams = false
+export const dynamicParams = false;
 
-export default async function BlogPostPage({
-  params,
-}: BlogPostPageProps) {
-  const { slug } = await params
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const { slug } = await params;
 
-  const post = await getPost(slug)
+  const post = await getPost(slug);
 
   if (post == null) {
-    notFound()
+    notFound();
   }
 
-  const html = await orgToHtml(post.source)
+  const html = await orgToHtml(post.source);
 
   return (
     <main>
       <article>
         <header>
           <h1>{post.title}</h1>
-          {post.date ? (
-            <time dateTime={post.date}>{post.date}</time>
-          ) : null}
+          {post.date ? <time dateTime={post.date}>{post.date}</time> : null}
         </header>
         <div
           dangerouslySetInnerHTML={{
@@ -55,5 +51,5 @@ export default async function BlogPostPage({
         />
       </article>
     </main>
-  )
+  );
 }
