@@ -9,13 +9,14 @@ are generated, and which failures should become 404 responses.
 
 ## Current Route Map
 
-| URL             | App Router file                     | Purpose             |
-| --------------- | ----------------------------------- | ------------------- |
-| `/`             | `src/app/page.tsx`                  | Home page           |
-| `/blog`         | `src/app/blog/page.tsx`             | Blog index          |
-| `/blog/[slug]`  | `src/app/blog/[slug]/page.tsx`      | Blog article detail |
-| unknown route   | `src/app/not-found.tsx`             | Site-level 404      |
-| missing article | `src/app/blog/[slug]/not-found.tsx` | Article-level 404   |
+| URL                              | App Router file                     | Purpose             |
+| -------------------------------- | ----------------------------------- | ------------------- |
+| `/`                              | `src/app/page.tsx`                  | Home page           |
+| `/blog`                          | `src/app/blog/page.tsx`             | Blog index          |
+| `/blog/[slug]`                   | `src/app/blog/[slug]/page.tsx`      | Blog article detail |
+| unknown route                    | `src/app/not-found.tsx`             | Site-level 404      |
+| ungenerated article slug         | `src/app/not-found.tsx`             | Site-level 404      |
+| generated but unreadable article | `src/app/blog/[slug]/not-found.tsx` | Article-level 404   |
 
 ## Blog Detail Route
 
@@ -36,10 +37,12 @@ This means the intended behavior is:
 - Unknown slugs are not generated on demand.
 - Adding a new Org file after a production build requires another build before
   the route is available.
+- A slug that was not returned by `generateStaticParams()` is handled by the
+  site-level 404.
 
 ## Missing Article Policy
 
-A missing article is a 404, not a generic application error.
+An unavailable article route is a 404, not a generic application error.
 
 This includes:
 
@@ -51,6 +54,15 @@ article resource at that URL.
 
 Invalid slugs should not expose filesystem paths, validation details, or internal
 security reasoning to the browser.
+
+With `dynamicParams = false`, a slug that was not returned by
+`generateStaticParams()` does not reach `src/app/blog/[slug]/page.tsx`.
+Therefore, `/blog/missing` currently uses the site-level 404 UI from
+`src/app/not-found.tsx`.
+
+`src/app/blog/[slug]/not-found.tsx` is still useful for cases where the dynamic
+route is reached but `getPost(slug)` returns `null`, such as a generated slug
+whose source cannot be read.
 
 ## Error Policy
 
