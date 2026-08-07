@@ -12,6 +12,13 @@ import path from "node:path";
  */
 const postsDirectory = path.join(process.cwd(), "content");
 
+type PostsRepository = {
+  getPostSlugs: () => Promise<string[]>;
+  getPosts: () => Promise<PostListItem[]>;
+  getPost: (slug: string) => Promise<Post | null>;
+  getPostSource: (slug: string) => Promise<string | null>;
+};
+
 export type PostListItem = {
   slug: string;
   title: string;
@@ -22,60 +29,22 @@ export type Post = PostListItem & {
   source: string;
 };
 
+export const postsRepository = createPostsRepository(postsDirectory);
+
 /**
  * contentディレクトリにある.orgファイルから、
  * URLに使用するslugの一覧を取得する。
  */
 export async function getPostSlugs(): Promise<string[]> {
-  const entries = await readdir(postsDirectory, {
-    withFileTypes: true,
-  });
-
-  return entries
-    .filter((entry) => {
-      return entry.isFile() && entry.name.endsWith(".org");
-    })
-    .map((entry) => {
-      return entry.name.replace(/\.org$/, "");
-    });
+  return postsRepository.getPostSlugs();
 }
 
 export async function getPosts(): Promise<PostListItem[]> {
-  const slugs = await getPostSlugs();
-
-  const posts = await Promise.all(
-    slugs.map(async (slug) => {
-      return getPost(slug);
-    })
-  );
-
-  return posts
-    .filter((post): post is Post => {
-      return post != null;
-    })
-    .map((post) => ({
-      slug: post.slug,
-      title: post.title,
-      date: post.date,
-    }))
-    .sort((a, b) => {
-      return b.date.localeCompare(a.date);
-    });
+  return postsRepository.getPosts();
 }
 
 export async function getPost(slug: string): Promise<Post | null> {
-  const source = await getPostSource(slug);
-
-  if (source == null) {
-    return null;
-  }
-
-  return {
-    slug,
-    title: getOrgKeyword(source, "TITLE") ?? slug,
-    date: getOrgKeyword(source, "DATE") ?? "",
-    source,
-  };
+  return postsRepository.getPost(slug);
 }
 
 /**
@@ -84,18 +53,83 @@ export async function getPost(slug: string): Promise<Post | null> {
  * 記事が存在しない場合はnullを返す。
  */
 export async function getPostSource(slug: string): Promise<string | null> {
-  // 「../」などを含む不正なslugを拒否する
-  if (!/^[a-zA-Z0-9_-]+$/.test(slug)) {
-    return null;
+  return postsRepository.getPostSource(slug);
+}
+
+export function createPostsRepository(baseDirectory: string): PostsRepository {
+  async function getPostSlugs() {
+    const entries = await readdir(baseDirectory, {
+      withFileTypes: true,
+    });
+
+    return entries
+      .filter((entry) => {
+        return entry.isFile() && entry.name.endsWith(".org");
+      })
+      .map((entry) => {
+        return entry.name.replace(/\.org$/, "");
+      });
   }
 
-  const filePath = path.join(postsDirectory, `${slug}.org`);
+  async function getPostSource(slug: string) {
+    // 「../」などを含む不正なslugを拒否する
+    if (!/^[a-zA-Z0-9_-]+$/.test(slug)) {
+      return null;
+    }
 
-  try {
-    return await readFile(filePath, "utf8");
-  } catch {
-    return null;
+    const filePath = path.join(baseDirectory, `${slug}.org`);
+
+    try {
+      return await readFile(filePath, "utf8");
+    } catch {
+      return null;
+    }
   }
+
+  async function getPost(slug: string) {
+    const source = await getPostSource(slug);
+
+    if (source == null) {
+      return null;
+    }
+
+    return {
+      slug,
+      title: getOrgKeyword(source, "TITLE") ?? slug,
+      date: getOrgKeyword(source, "DATE") ?? "",
+      source,
+    };
+  }
+
+  async function getPosts() {
+    const slugs = await getPostSlugs();
+
+    const posts = await Promise.all(
+      slugs.map(async (slug) => {
+        return getPost(slug);
+      })
+    );
+
+    return posts
+      .filter((post): post is Post => {
+        return post != null;
+      })
+      .map((post) => ({
+        slug: post.slug,
+        title: post.title,
+        date: post.date,
+      }))
+      .sort((a, b) => {
+        return b.date.localeCompare(a.date);
+      });
+  }
+
+  return {
+    getPostSlugs,
+    getPosts,
+    getPost,
+    getPostSource,
+  };
 }
 
 function getOrgKeyword(source: string, keyword: string): string | null {
