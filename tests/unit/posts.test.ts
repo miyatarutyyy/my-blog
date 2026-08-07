@@ -132,17 +132,88 @@ describe("createPostsRepository", () => {
     });
   });
 
-  test("getPost uses the slug and empty date when Org keywords are missing", async () => {
+  test("getPost throws when required title metadata is missing", async () => {
     const contentDirectory = await createTempContentDirectory();
     const source = "* Body\n";
     await writePost(contentDirectory, "untitled", source);
 
     const posts = createPostsRepository(contentDirectory);
 
-    await expect(posts.getPost("untitled")).resolves.toEqual({
-      slug: "untitled",
-      title: "untitled",
-      date: "",
+    await expect(posts.getPost("untitled")).rejects.toThrow(
+      'Post "untitled" is missing required #+TITLE metadata.'
+    );
+  });
+
+  test("getPost throws when required title metadata is empty", async () => {
+    const contentDirectory = await createTempContentDirectory();
+    await writePost(contentDirectory, "empty-title", "#+TITLE:   \n\n* Body\n");
+
+    const posts = createPostsRepository(contentDirectory);
+
+    await expect(posts.getPost("empty-title")).rejects.toThrow(
+      'Post "empty-title" is missing required #+TITLE metadata.'
+    );
+  });
+
+  test("getPost throws when required date metadata is missing", async () => {
+    const contentDirectory = await createTempContentDirectory();
+    await writePost(
+      contentDirectory,
+      "missing-date",
+      "#+TITLE: Missing Date\n\n* Body\n"
+    );
+
+    const posts = createPostsRepository(contentDirectory);
+
+    await expect(posts.getPost("missing-date")).rejects.toThrow(
+      'Post "missing-date" is missing required #+DATE metadata.'
+    );
+  });
+
+  test("getPost throws when required date metadata is empty", async () => {
+    const contentDirectory = await createTempContentDirectory();
+    await writePost(
+      contentDirectory,
+      "empty-date",
+      "#+TITLE: Empty Date\n#+DATE:   \n\n* Body\n"
+    );
+
+    const posts = createPostsRepository(contentDirectory);
+
+    await expect(posts.getPost("empty-date")).rejects.toThrow(
+      'Post "empty-date" is missing required #+DATE metadata.'
+    );
+  });
+
+  test.each(["2026-2-01", "2026-02-30", "2025-02-29", "0000-01-01"])(
+    "getPost throws when date metadata is invalid: %s",
+    async (date) => {
+      const contentDirectory = await createTempContentDirectory();
+      await writePost(
+        contentDirectory,
+        "invalid-date",
+        `#+TITLE: Invalid Date\n#+DATE: ${date}\n\n* Body\n`
+      );
+
+      const posts = createPostsRepository(contentDirectory);
+
+      await expect(posts.getPost("invalid-date")).rejects.toThrow(
+        'Post "invalid-date" has invalid #+DATE metadata. Expected YYYY-MM-DD.'
+      );
+    }
+  );
+
+  test("getPost accepts leap day in a leap year", async () => {
+    const contentDirectory = await createTempContentDirectory();
+    const source = "#+TITLE: Leap Day\n#+DATE: 2024-02-29\n\n* Body\n";
+    await writePost(contentDirectory, "leap-day", source);
+
+    const posts = createPostsRepository(contentDirectory);
+
+    await expect(posts.getPost("leap-day")).resolves.toEqual({
+      slug: "leap-day",
+      title: "Leap Day",
+      date: "2024-02-29",
       source,
     });
   });
@@ -182,5 +253,31 @@ describe("createPostsRepository", () => {
         date: "2026-01-01",
       },
     ]);
+  });
+
+  test("getPosts throws when an Org file is missing required title metadata", async () => {
+    const contentDirectory = await createTempContentDirectory();
+    await writePost(contentDirectory, "untitled", "* Body\n");
+
+    const posts = createPostsRepository(contentDirectory);
+
+    await expect(posts.getPosts()).rejects.toThrow(
+      'Post "untitled" is missing required #+TITLE metadata.'
+    );
+  });
+
+  test("getPosts throws when an Org file is missing required date metadata", async () => {
+    const contentDirectory = await createTempContentDirectory();
+    await writePost(
+      contentDirectory,
+      "missing-date",
+      "#+TITLE: Missing Date\n\n* Body\n"
+    );
+
+    const posts = createPostsRepository(contentDirectory);
+
+    await expect(posts.getPosts()).rejects.toThrow(
+      'Post "missing-date" is missing required #+DATE metadata.'
+    );
   });
 });

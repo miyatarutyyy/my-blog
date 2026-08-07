@@ -26,6 +26,15 @@ test.describe("public routing", () => {
     );
   });
 
+  test("uses the article title as the article detail metadata title", async ({
+    request,
+  }) => {
+    const response = await request.get("/blog/test-article");
+
+    expect(response.status()).toBe(200);
+    expect(await response.text()).toContain("<title>テスト記事</title>");
+  });
+
   test("returns 404 for a slug that was not statically generated", async ({
     request,
   }) => {

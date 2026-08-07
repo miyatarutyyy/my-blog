@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
 import { orgToHtml } from "@/lib/org";
@@ -25,6 +26,21 @@ export async function generateStaticParams() {
  * これを 404 として処理
  */
 export const dynamicParams = false;
+
+export async function generateMetadata({
+  params,
+}: BlogPostPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const post = await getPost(slug);
+
+  if (post == null) {
+    notFound();
+  }
+
+  return {
+    title: post.title ?? slug,
+  };
+}
 
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
