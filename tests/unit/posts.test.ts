@@ -58,6 +58,29 @@ describe("createPostsRepository", () => {
     );
   });
 
+  test("getPostSlugs returns an empty list when there are no Org files", async () => {
+    const contentDirectory = await createTempContentDirectory();
+    await writeFile(
+      path.join(contentDirectory, "draft.txt"),
+      "ignored",
+      "utf8"
+    );
+
+    const posts = createPostsRepository(contentDirectory);
+
+    await expect(posts.getPostSlugs()).resolves.toEqual([]);
+  });
+
+  test("getPostSlugs throws when the content directory cannot be read", async () => {
+    const contentDirectory = path.join(
+      await createTempContentDirectory(),
+      "missing-content"
+    );
+    const posts = createPostsRepository(contentDirectory);
+
+    await expect(posts.getPostSlugs()).rejects.toThrow();
+  });
+
   test("getPostSource returns source for an existing slug", async () => {
     const contentDirectory = await createTempContentDirectory();
     const source = "#+TITLE: Test\n\n* Body\n";
@@ -73,6 +96,15 @@ describe("createPostsRepository", () => {
     const posts = createPostsRepository(contentDirectory);
 
     await expect(posts.getPostSource("missing")).resolves.toBeNull();
+  });
+
+  test("getPostSource throws unexpected filesystem errors", async () => {
+    const contentDirectory = await createTempContentDirectory();
+    await mkdir(path.join(contentDirectory, "unreadable.org"));
+
+    const posts = createPostsRepository(contentDirectory);
+
+    await expect(posts.getPostSource("unreadable")).rejects.toThrow();
   });
 
   test.each(["../secret", "nested/secret", "..%2Fsecret", "secret.org", ""])(

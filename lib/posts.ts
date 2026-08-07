@@ -81,8 +81,12 @@ export function createPostsRepository(baseDirectory: string): PostsRepository {
 
     try {
       return await readFile(filePath, "utf8");
-    } catch {
-      return null;
+    } catch (error) {
+      if (isNodeError(error) && error.code === "ENOENT") {
+        return null;
+      }
+
+      throw error;
     }
   }
 
@@ -137,4 +141,8 @@ function getOrgKeyword(source: string, keyword: string): string | null {
   const match = source.match(pattern);
 
   return match?.[1]?.trim() ?? null;
+}
+
+function isNodeError(error: unknown): error is NodeJS.ErrnoException {
+  return error instanceof Error && "code" in error;
 }

@@ -9,14 +9,13 @@ are generated, and which failures should become 404 responses.
 
 ## Current Route Map
 
-| URL                              | App Router file                     | Purpose             |
-| -------------------------------- | ----------------------------------- | ------------------- |
-| `/`                              | `src/app/page.tsx`                  | Home page           |
-| `/blog`                          | `src/app/blog/page.tsx`             | Blog index          |
-| `/blog/[slug]`                   | `src/app/blog/[slug]/page.tsx`      | Blog article detail |
-| unknown route                    | `src/app/not-found.tsx`             | Site-level 404      |
-| ungenerated article slug         | `src/app/not-found.tsx`             | Site-level 404      |
-| generated but unreadable article | `src/app/blog/[slug]/not-found.tsx` | Article-level 404   |
+| URL                      | App Router file                | Purpose             |
+| ------------------------ | ------------------------------ | ------------------- |
+| `/`                      | `src/app/page.tsx`             | Home page           |
+| `/blog`                  | `src/app/blog/page.tsx`        | Blog index          |
+| `/blog/[slug]`           | `src/app/blog/[slug]/page.tsx` | Blog article detail |
+| unknown route            | `src/app/not-found.tsx`        | Site-level 404      |
+| ungenerated article slug | `src/app/not-found.tsx`        | Site-level 404      |
 
 ## Blog Detail Route
 
@@ -60,23 +59,39 @@ With `dynamicParams = false`, a slug that was not returned by
 Therefore, `/blog/missing` currently uses the site-level 404 UI from
 `src/app/not-found.tsx`.
 
-`src/app/blog/[slug]/not-found.tsx` is still useful for cases where the dynamic
-route is reached but `getPost(slug)` returns `null`, such as a generated slug
-whose source cannot be read.
-
 ## Error Policy
 
 Use 404 behavior when the requested public resource does not exist.
+
+Current 404 cases are:
+
+- A slug rejected by the slug validation rule.
+- A valid slug whose Org file does not exist.
+- A slug that was not returned by `generateStaticParams()`.
+
+Current non-error empty list cases are:
+
+- `content/` exists but contains no Org files.
+- `content/` contains only files that do not end with `.org`.
 
 Use an error page or thrown error for failures where the resource may exist but
 the system failed to produce the response, such as:
 
 - Org parsing failure
+- `content/` cannot be read while building the article list
 - Unexpected filesystem failure
 - Unexpected data contract failure
 
 Do not silently replace unexpected failures with empty lists or `null`, because
 that hides problems that should be fixed.
+
+For filesystem reads, only the "file does not exist" case should become `null`.
+Other filesystem failures should be thrown so that Next.js can treat them as
+errors instead of article 404s.
+
+Org conversion failures should also be thrown. The article source exists in that
+case, but the system failed to produce display HTML from it. That is not an
+article 404.
 
 ## Current Learning Questions
 
