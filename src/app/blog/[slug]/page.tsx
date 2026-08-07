@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { cache } from "react";
 
 import { orgToHtml } from "@/lib/org";
 import { getPost, getPostSlugs } from "@/lib/posts";
@@ -22,16 +23,20 @@ export async function generateStaticParams() {
 }
 
 /*
- * generateStaticParams() が返さなかった slug へのアクセス
- * これを 404 として処理
+ * generateStaticParams() が返さなかった slug も page まで到達させる。
+ * 記事の有無は getPost() の結果で判定し、存在しなければ記事用 404 を表示する。
  */
-export const dynamicParams = false;
+export const dynamicParams = true;
+
+const getCachedPost = cache(async (slug: string) => {
+  return getPost(slug);
+});
 
 export async function generateMetadata({
   params,
 }: BlogPostPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getPost(slug);
+  const post = await getCachedPost(slug);
 
   if (post == null) {
     notFound();
@@ -45,7 +50,7 @@ export async function generateMetadata({
 export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const { slug } = await params;
 
-  const post = await getPost(slug);
+  const post = await getCachedPost(slug);
 
   if (post == null) {
     notFound();

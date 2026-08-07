@@ -73,6 +73,8 @@ Before moving to the next topic, the owner should be able to answer:
 
 - If a new Org file is added under `content/`, when does its route become available?
 - Why does `/blog/[slug]` use `generateStaticParams()`?
-- What does `dynamicParams = false` change?
+- What does `dynamicParams = true` change?
 - Why is a missing article a 404 instead of a generic error?
+- Why does a missing article use article-level 404 while an unknown site route uses site-level 404?
+- Why is repository-level slug validation still required when unknown article slugs can reach the page?
 - What kind of Org parsing or filesystem failure should not be hidden as an empty result?

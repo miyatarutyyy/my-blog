@@ -41,8 +41,21 @@ test.describe("public routing", () => {
     const response = await request.get("/blog/missing");
 
     expect(response.status()).toBe(404);
-    expect(await response.text()).toContain("Page not found");
+    expect(await response.text()).toContain("Article not found");
+    expect(await response.text()).toContain("Back to blog index");
   });
+
+  for (const path of ["/blog/..%2Fsecret", "/blog/secret.org"]) {
+    test(`returns article 404 for an invalid article slug: ${path}`, async ({
+      request,
+    }) => {
+      const response = await request.get(path);
+
+      expect(response.status()).toBe(404);
+      expect(await response.text()).toContain("Article not found");
+      expect(await response.text()).toContain("Back to blog index");
+    });
+  }
 
   test("returns site-level 404 for an unknown route", async ({ request }) => {
     const response = await request.get("/unknown-route");
