@@ -8,13 +8,15 @@ The current scripts are:
 
 - `pnpm format:check`
 - `pnpm lint`
+- `pnpm test:unit`
 - `pnpm build`
+- `pnpm test:e2e:prod`
 
 The intended deployment target is Vercel.
 
 ## Problem
 
-We want commits and pull requests to fail before deployment when formatting, linting, or production build generation is broken.
+We want commits and pull requests to fail before deployment when formatting, linting, unit tests, production build generation, or production-mode route behavior is broken.
 
 We also want a deployment path that is simple enough for the current project stage and still leaves room for later checks such as content snapshots, generated route verification, or end-to-end tests.
 
@@ -22,7 +24,7 @@ We also want a deployment path that is simple enough for the current project sta
 
 ### Option A: GitHub Actions checks and Vercel Git deployment
 
-GitHub Actions runs `format:check`, `lint`, and `build`.
+GitHub Actions runs `format:check`, `lint`, `test:unit`, `build`, and production-mode end-to-end tests against `next start`.
 
 Vercel is connected to the GitHub repository and handles Preview and Production deployments from Git pushes.
 
@@ -45,10 +47,14 @@ Keeping GitHub Actions responsible for checks and Vercel responsible for deploym
 1. Install dependencies from `pnpm-lock.yaml`.
 2. Fail on formatting issues.
 3. Fail on lint issues.
-4. Fail if the Next.js production build cannot be created from the current code and content.
-5. Let Vercel deploy commits through its Git integration.
+4. Fail if unit tests for post loading or Org conversion break.
+5. Fail if the Next.js production build cannot be created from the current code and content.
+6. Fail if the generated production server does not serve the expected public routes.
+7. Let Vercel deploy commits through its Git integration.
 
 The `pnpm build` step is the current generated-output check because the generated Next.js routes depend on the Org content read during the build.
+
+The production end-to-end step intentionally runs after `pnpm build` and starts the built app with `next start`. This checks the route behavior readers will see from the generated app, not only the behavior of `next dev`.
 
 ## Downsides
 
@@ -56,7 +62,7 @@ GitHub Actions does not currently compare committed content against a separate c
 
 Vercel may still create preview or production deployments unless the Vercel project is configured to require GitHub checks before promotion.
 
-The workflow does not yet include end-to-end tests, accessibility checks, or route-level assertions.
+The workflow does not yet include browser-rendered accessibility checks or tests against a deployed Vercel Preview URL.
 
 ## Conditions for Reconsideration
 

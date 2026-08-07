@@ -10,6 +10,7 @@
     "start": "next start",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
+    "test:e2e:prod": "playwright test --config playwright.production.config.ts",
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

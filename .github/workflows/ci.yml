@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   checks:
-    name: Format, lint, and build
+    name: Format, lint, test, and build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -36,5 +36,11 @@ jobs:
       - name: Lint
         run: pnpm lint
 
+      - name: Unit tests
+        run: pnpm test:unit
+
       - name: Build
         run: pnpm build
+
+      - name: Production E2E tests
+        run: pnpm test:e2e:prod
