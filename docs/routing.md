@@ -93,6 +93,32 @@ Org conversion failures should also be thrown. The article source exists in that
 case, but the system failed to produce display HTML from it. That is not an
 article 404.
 
+## Build-Time Error Policy
+
+In the current static Org-file model, `/blog` is generated as static content
+during `next build`.
+
+Therefore, article list failures should primarily be treated as build failures,
+not as runtime states that need a recovery UI for readers.
+
+For the current project stage, this means:
+
+- Do not catch `readdir(content/)` failures and replace them with an empty list.
+- Do not hide unexpected file read failures as missing posts.
+- Let build-time failures fail the build so broken content is not deployed.
+- Do not add complex runtime fallback UI for article list failures yet.
+
+This should be reconsidered if the article list becomes runtime data, such as:
+
+- fetching from a NestJS API
+- reading from a database
+- using ISR or runtime revalidation
+- allowing article changes without a full rebuild
+
+At that point, list-fetching errors may become runtime user-visible failures and
+should be handled with segment-level error UI, retry behavior, and server-side
+logging.
+
 ## Current Learning Questions
 
 The owner should be able to explain:
