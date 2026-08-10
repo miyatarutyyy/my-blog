@@ -5,6 +5,8 @@ import { cache } from "react";
 import { orgToHtml } from "@/lib/org";
 import { getPost, getPostSlugs } from "@/lib/posts";
 
+import styles from "./page.module.css";
+
 type BlogPostPageProps = {
   params: Promise<{
     slug: string;
@@ -59,13 +61,18 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   const html = await orgToHtml(post.source);
 
   return (
-    <main>
-      <article>
-        <header>
-          <h1>{post.title}</h1>
-          {post.date ? <time dateTime={post.date}>{post.date}</time> : null}
+    <main className={styles.main}>
+      <article className={styles.article}>
+        <header className={styles.header}>
+          <h1 className={styles.title}>{post.title}</h1>
+          {post.date ? (
+            <time className={styles.date} dateTime={post.date}>
+              {post.date}
+            </time>
+          ) : null}
         </header>
         <div
+          className={styles.content}
           dangerouslySetInnerHTML={{
             __html: html,
           }}

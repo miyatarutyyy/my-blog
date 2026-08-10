@@ -5,8 +5,15 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <h1>ARCHIVYYY</h1>
-        <Link href="/blog">Blog</Link>
+        <div className={styles.container}>
+          <h1>ARCHIVYYY</h1>
+          <span className={styles.divider} aria-hidden="true" />
+          <p>たるてぃのブログサイト</p>
+          <div className={styles.links}>
+            <Link href="/blog">[ 記事一覧 ]</Link>
+            <Link href="/socials">[ 外部接続 ]</Link>
+          </div>
+        </div>
       </main>
     </div>
   );

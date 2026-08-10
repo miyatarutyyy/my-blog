@@ -7,6 +7,10 @@
   --color-action-primary-hover: #383838;
   --color-action-secondary-hover: #f2f2f2;
   --color-action-secondary-border: #ebebeb;
+  --space-page-inline: 24px;
+  --space-page-block: 48px;
+  --width-content: 800px;
+  --width-article: 720px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -38,7 +42,7 @@ body {
   flex-direction: column;
   color: var(--color-foreground);
   background: var(--color-background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
