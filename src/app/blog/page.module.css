@@ -1,0 +1,56 @@
+.main {
+  width: 100%;
+  max-width: var(--width-content);
+  margin: 0 auto;
+  padding: var(--space-page-block) var(--space-page-inline);
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 40px;
+  letter-spacing: 0;
+  color: var(--color-text-primary);
+}
+
+.empty {
+  margin-top: 24px;
+  color: var(--color-text-secondary);
+}
+
+.postList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 32px;
+  list-style: none;
+}
+
+.postItem {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.postItem a {
+  color: var(--color-text-primary);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.postDate {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-text-secondary);
+}
+
+@media (min-width: 768px) {
+  .main {
+    padding: 80px 60px;
+  }
+
+  .title {
+    font-size: 40px;
+    line-height: 48px;
+  }
+}

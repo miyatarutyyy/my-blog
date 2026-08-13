@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { Loading } from "@/src/components/Loading";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -10,6 +12,12 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+const soukouMincho = localFont({
+  src: "./fonts/SoukouMincho.ttf",
+  variable: "--font-soukou-mincho",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -23,8 +31,46 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body>{children}</body>
+    <html
+      lang="ja"
+      className={`${geistSans.variable} ${geistMono.variable} ${soukouMincho.variable}`}
+    >
+      <body>
+        <Loading
+          fonts={[
+            {
+              id: "system",
+              kind: "system",
+              label: "System fallback",
+              fontFamily: "system-ui, sans-serif",
+              sampleText: "A",
+            },
+            {
+              id: "geist-sans",
+              kind: "web",
+              label: "Geist Sans",
+              fontFamily: geistSans.style.fontFamily,
+              sampleText: "A",
+            },
+            {
+              id: "geist-mono",
+              kind: "web",
+              label: "Geist Mono",
+              fontFamily: geistMono.style.fontFamily,
+              sampleText: "A",
+            },
+            {
+              id: "soukou-mincho",
+              kind: "web",
+              label: "SoukouMincho",
+              fontFamily: soukouMincho.style.fontFamily,
+              sampleText: "永",
+            },
+          ]}
+        >
+          {children}
+        </Loading>
+      </body>
     </html>
   );
 }
