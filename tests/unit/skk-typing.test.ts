@@ -34,6 +34,27 @@ describe("expandRomajiKeystrokes", () => {
     ).toEqual(["h", "ほ", "ほn", "ほん"]);
   });
 
+  test("expands thi as ティ-style small vowel input", () => {
+    expect(
+      expandRomajiKeystrokes("taruthi", "たるてぃ").map(
+        (state) => state.text
+      )
+    ).toEqual(["t", "た", "たr", "たる", "たるt", "たるth", "たるてぃ"]);
+  });
+
+  test("expands home page link label words with repository romaji rules", () => {
+    expect(expandRomajiKeystrokes("kizi", "きじ").at(-1)?.text).toBe("きじ");
+    expect(expandRomajiKeystrokes("itiran", "いちらん").at(-1)?.text).toBe(
+      "いちらん"
+    );
+    expect(expandRomajiKeystrokes("gaibu", "がいぶ").at(-1)?.text).toBe(
+      "がいぶ"
+    );
+    expect(expandRomajiKeystrokes("setuzoku", "せつぞく").at(-1)?.text).toBe(
+      "せつぞく"
+    );
+  });
+
   test("expands doubled consonants as 促音", () => {
     expect(
       expandRomajiKeystrokes("gakkou", "がっこう").map((state) => state.text)

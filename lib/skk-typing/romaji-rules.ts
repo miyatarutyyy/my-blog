@@ -23,6 +23,7 @@ export const romajiRules = [
   ["ti", "ち"],
   ["tu", "つ"],
   ["te", "て"],
+  ["thi", "てぃ"],
   ["to", "と"],
   ["na", "な"],
   ["ni", "に"],

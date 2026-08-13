@@ -16,9 +16,9 @@ import {
 
 import styles from "./SkkTyping.module.css";
 
-const START_DELAY_MS = 120;
-const FRAME_INTERVAL_MS = 160;
-const INTERSECTION_THRESHOLD = 0.35;
+const START_DELAY_MS = 500;
+const FRAME_INTERVAL_MS = 100;
+const INTERSECTION_THRESHOLD = 0.5;
 
 type PlaybackStatus = "idle" | "playing";
 
@@ -143,14 +143,10 @@ export function SkkTyping({ label, plan, className }: SkkTypingProps) {
     playbackStatus === "playing" &&
     frameIndex < compileResult.frames.length - 1;
   const visualLabel = reduceMotion || !compileResult.ok ? label : null;
-  const reserveText = compileResult.ok
-    ? getLongestDisplayText(label, compileResult.frames)
-    : label;
-
   return (
     <span className={rootClassName} ref={rootRef}>
       <span className={styles.visual} aria-hidden="true">
-        <span className={styles.reserve}>{reserveText}</span>
+        <span className={styles.reserve}>{label}</span>
         <span className={styles.live}>
           {visualLabel ??
             (playbackStatus === "idle" || !frame ? (
@@ -164,18 +160,6 @@ export function SkkTyping({ label, plan, className }: SkkTypingProps) {
       <span className={styles.srOnly}>{label}</span>
     </span>
   );
-}
-
-function getLongestDisplayText(label: string, frames: readonly SkkFrame[]) {
-  return frames.reduce((longest, frame) => {
-    const text = formatFrame(frame);
-
-    return text.length > longest.length ? text : longest;
-  }, label);
-}
-
-function formatFrame(frame: SkkFrame) {
-  return `${frame.committed}${frame.marker ?? ""}${frame.composing}`;
 }
 
 function isElementInViewport(element: Element) {

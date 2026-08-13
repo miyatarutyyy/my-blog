@@ -5,17 +5,20 @@
 }
 
 .visual {
-  display: inline-grid;
+  position: relative;
+  display: inline-block;
   max-width: 100%;
   white-space: nowrap;
 }
 
-.reserve,
 .live {
-  grid-area: 1 / 1;
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
 }
 
 .reserve {
+  display: inline-block;
   visibility: hidden;
   pointer-events: none;
 }
