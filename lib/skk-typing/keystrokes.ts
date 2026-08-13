@@ -1,7 +1,4 @@
-import {
-  isRomajiRulePrefix,
-  resolveRomajiRule,
-} from "./romaji-rules";
+import { isRomajiRulePrefix, resolveRomajiRule } from "./romaji-rules";
 import { SkkPlanError, type KeystrokeState } from "./types";
 
 export function expandRomajiKeystrokes(
