@@ -1,0 +1,72 @@
+export type LoadingFontKind = "system" | "web";
+
+export type LoadingFontStatus =
+  "idle" | "loading" | "ready" | "timeout" | "failed";
+
+export type LoadingFontDefinition = {
+  id: string;
+  kind: LoadingFontKind;
+  label: string;
+  fontFamily: string;
+  sampleText: string;
+};
+
+export type LoadingFontState = LoadingFontDefinition & {
+  status: LoadingFontStatus;
+};
+
+const LOADING_STATUS_LABELS = [
+  "[ #.... ]",
+  "[ .#... ]",
+  "[ ..#.. ]",
+  "[ ...#. ]",
+  "[ ....# ]",
+] as const;
+
+export function createInitialFontStates(
+  fonts: readonly LoadingFontDefinition[]
+): LoadingFontState[] {
+  return fonts.map((font) => ({
+    ...font,
+    status: font.kind === "system" ? "ready" : "idle",
+  }));
+}
+
+export function getWebFonts(fonts: readonly LoadingFontDefinition[]) {
+  return fonts.filter((font) => font.kind === "web");
+}
+
+export function getFontStatusLabel(
+  status: LoadingFontStatus,
+  loadingFrame: number
+) {
+  if (status === "ready") {
+    return "[ READY ]";
+  }
+
+  if (status === "loading") {
+    return LOADING_STATUS_LABELS[loadingFrame % LOADING_STATUS_LABELS.length];
+  }
+
+  if (status === "timeout") {
+    return "[TIMEOUT]";
+  }
+
+  if (status === "failed") {
+    return "[ ERROR ]";
+  }
+
+  return "[ ----- ]";
+}
+
+export function getNextLoadingFrame(frame: number) {
+  return (frame + 1) % LOADING_STATUS_LABELS.length;
+}
+
+export function isFontLoadSettled(font: LoadingFontState) {
+  return (
+    font.status === "ready" ||
+    font.status === "timeout" ||
+    font.status === "failed"
+  );
+}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
+import { Loading } from "@/src/components/Loading";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -34,7 +35,42 @@ export default function RootLayout({
       lang="ja"
       className={`${geistSans.variable} ${geistMono.variable} ${soukouMincho.variable}`}
     >
-      <body>{children}</body>
+      <body>
+        <Loading
+          fonts={[
+            {
+              id: "system",
+              kind: "system",
+              label: "System fallback",
+              fontFamily: "system-ui, sans-serif",
+              sampleText: "A",
+            },
+            {
+              id: "geist-sans",
+              kind: "web",
+              label: "Geist Sans",
+              fontFamily: geistSans.style.fontFamily,
+              sampleText: "A",
+            },
+            {
+              id: "geist-mono",
+              kind: "web",
+              label: "Geist Mono",
+              fontFamily: geistMono.style.fontFamily,
+              sampleText: "A",
+            },
+            {
+              id: "soukou-mincho",
+              kind: "web",
+              label: "SoukouMincho",
+              fontFamily: soukouMincho.style.fontFamily,
+              sampleText: "永",
+            },
+          ]}
+        >
+          {children}
+        </Loading>
+      </body>
     </html>
   );
 }

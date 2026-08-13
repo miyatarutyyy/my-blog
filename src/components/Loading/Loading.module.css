@@ -1,0 +1,149 @@
+.contentPending,
+.contentReady {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.contentPending {
+  visibility: hidden;
+}
+
+.contentReady {
+  visibility: visible;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-page-block) var(--space-page-inline);
+  background: var(--color-background);
+  color: var(--color-text-primary);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.panel::after {
+  content: "";
+  display: block;
+  height: 40px;
+}
+
+.sample {
+  display: grid;
+  width: 100%;
+  max-width: 320px;
+  min-height: 56px;
+  place-items: center;
+  font-weight: 600;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.sample span {
+  display: block;
+  font-size: 48px;
+  line-height: 56px;
+  letter-spacing: 0;
+}
+
+.divider {
+  width: 320px;
+  height: 1px;
+  margin-top: 16px;
+  background-color: var(--color-text-primary);
+}
+
+.fontList {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: min(100%, 250px);
+  margin-top: 16px;
+  list-style: none;
+}
+
+.fontItem {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 12px;
+  width: 100%;
+  padding: 0 4px;
+}
+
+.fontItemReady {
+  background: #1f7a3f;
+  color: #ffffff;
+}
+
+.fontItemLoading {
+  background: var(--color-text-primary);
+  color: var(--color-background);
+}
+
+.fontItemTimeout {
+  background: #777777;
+  color: #ffffff;
+}
+
+.fontItemFailed {
+  background: #b42318;
+  color: #ffffff;
+}
+
+.fontItemIdle {
+  background: transparent;
+  color: var(--color-text-primary);
+}
+
+.status,
+.fontName {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 12px;
+  line-height: 20px;
+  letter-spacing: 0;
+}
+
+.status {
+  white-space: pre;
+}
+
+.fontName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .status {
+    animation: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .panel {
+    max-width: var(--width-content);
+  }
+
+  .sample {
+    max-width: 480px;
+    min-height: 72px;
+  }
+
+  .sample span {
+    font-size: 64px;
+    line-height: 72px;
+  }
+}
