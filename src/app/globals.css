@@ -13,19 +13,6 @@
   --width-article: 720px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #ffefd7;
-    --color-foreground: #171717;
-    --color-surface: #000000;
-    --color-text-primary: #ededed;
-    --color-text-secondary: #999999;
-    --color-action-primary-hover: #cccccc;
-    --color-action-secondary-hover: #1a1a1a;
-    --color-action-secondary-border: #1a1a1a;
-  }
-}
-
 html {
   height: 100%;
 }
@@ -56,10 +43,4 @@ body {
 a {
   color: inherit;
   text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
 }
