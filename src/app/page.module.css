@@ -14,7 +14,7 @@
   width: 100%;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-surface);
+  background-color: var(--color-background);
   padding: var(--space-page-block) var(--space-page-inline);
 }
 
