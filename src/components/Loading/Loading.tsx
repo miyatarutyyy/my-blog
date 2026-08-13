@@ -176,49 +176,50 @@ export function Loading({ children, fonts }: LoadingProps) {
     };
   }, [isReady, reduceMotion]);
 
-  if (isReady) {
-    return children;
-  }
-
   return (
-    <div
-      className={`${styles.overlay} ${isClearing ? styles.overlayClearing : ""}`}
-      role="status"
-      aria-live="polite"
-      style={overlayStyle}
-    >
-      <div className={styles.panel}>
-        <div className={styles.sample} aria-hidden="true">
-          {activeSampleFont ? (
-            <span style={{ fontFamily: activeSampleFont.fontFamily }}>
-              {activeSampleFont.sampleText}
-            </span>
-          ) : null}
+    <>
+      {children}
+      {isReady ? null : (
+        <div
+          className={`${styles.overlay} ${isClearing ? styles.overlayClearing : ""}`}
+          role="status"
+          aria-live="polite"
+          style={overlayStyle}
+        >
+          <div className={styles.panel}>
+            <div className={styles.sample} aria-hidden="true">
+              {activeSampleFont ? (
+                <span style={{ fontFamily: activeSampleFont.fontFamily }}>
+                  {activeSampleFont.sampleText}
+                </span>
+              ) : null}
+            </div>
+            <span className={styles.divider} aria-hidden="true" />
+            <ul className={styles.fontList}>
+              {fontStates.map((font) => (
+                <li
+                  className={`${styles.fontItem} ${styles[getFontStatusClassName(font.status)]}`}
+                  key={font.id}
+                >
+                  <span className={styles.status}>
+                    {getFontStatusLabel(
+                      font.status,
+                      reduceMotion ? 1 : loadingFrame
+                    )}
+                  </span>
+                  <span
+                    className={styles.fontName}
+                    style={{ fontFamily: font.fontFamily }}
+                  >
+                    {font.label}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-        <span className={styles.divider} aria-hidden="true" />
-        <ul className={styles.fontList}>
-          {fontStates.map((font) => (
-            <li
-              className={`${styles.fontItem} ${styles[getFontStatusClassName(font.status)]}`}
-              key={font.id}
-            >
-              <span className={styles.status}>
-                {getFontStatusLabel(
-                  font.status,
-                  reduceMotion ? 1 : loadingFrame
-                )}
-              </span>
-              <span
-                className={styles.fontName}
-                style={{ fontFamily: font.fontFamily }}
-              >
-                {font.label}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </div>
+      )}
+    </>
   );
 }
 
