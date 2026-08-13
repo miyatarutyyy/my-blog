@@ -4,25 +4,18 @@ import { SkkTyping } from "@/src/components/SkkTyping";
 
 import styles from "./page.module.css";
 
-// const titleTypingPlan = [
-//   {
-//     mode: "literal",
-//     input: "ARCHIVYYY",
-//   },
-// ] as const;
-
 const titleTypingPlan = [
   {
-    input: "meishou",
+    input: "meisyou",
     reading: "めいしょう",
-    output: "めいしょう",
+    output: "名称",
     convert: true,
     candidates: ["名称"],
   },
   {
     input: "mitei",
     reading: "みてい",
-    output: "みてい",
+    output: "未定",
     convert: true,
     candidates: ["未定"],
   },
@@ -100,7 +93,7 @@ export default function Home() {
       <main className={styles.main}>
         <div className={styles.container}>
           <h1>
-            <SkkTyping label="ARCHIVYYY" plan={titleTypingPlan} />
+            <SkkTyping label="名称未定" plan={titleTypingPlan} />
           </h1>
           <span className={styles.divider} aria-hidden="true" />
           <p>

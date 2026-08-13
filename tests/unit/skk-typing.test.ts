@@ -36,13 +36,17 @@ describe("expandRomajiKeystrokes", () => {
 
   test("expands thi as ティ-style small vowel input", () => {
     expect(
-      expandRomajiKeystrokes("taruthi", "たるてぃ").map(
-        (state) => state.text
-      )
+      expandRomajiKeystrokes("taruthi", "たるてぃ").map((state) => state.text)
     ).toEqual(["t", "た", "たr", "たる", "たるt", "たるth", "たるてぃ"]);
   });
 
   test("expands home page link label words with repository romaji rules", () => {
+    expect(expandRomajiKeystrokes("meisyou", "めいしょう").at(-1)?.text).toBe(
+      "めいしょう"
+    );
+    expect(expandRomajiKeystrokes("mitei", "みてい").at(-1)?.text).toBe(
+      "みてい"
+    );
     expect(expandRomajiKeystrokes("kizi", "きじ").at(-1)?.text).toBe("きじ");
     expect(expandRomajiKeystrokes("itiran", "いちらん").at(-1)?.text).toBe(
       "いちらん"

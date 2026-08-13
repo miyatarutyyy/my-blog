@@ -5,7 +5,7 @@ test.describe("public routing", () => {
     const response = await request.get("/");
 
     expect(response.status()).toBe(200);
-    expect(await response.text()).toContain("ARCHIVYYY");
+    expect(await response.text()).toContain("名称未定");
   });
 
   test("renders the blog index", async ({ request }) => {
