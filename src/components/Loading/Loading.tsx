@@ -12,6 +12,7 @@ import {
   type LoadingFontDefinition,
   type LoadingFontState,
 } from "./loading-state";
+import { LoadingReadyContext } from "./loading-ready";
 import styles from "./Loading.module.css";
 
 const FONT_LOAD_TIMEOUT_MS = 2500;
@@ -177,7 +178,7 @@ export function Loading({ children, fonts }: LoadingProps) {
   }, [isReady, reduceMotion]);
 
   return (
-    <>
+    <LoadingReadyContext.Provider value={isReady}>
       {children}
       {isReady ? null : (
         <div
@@ -219,7 +220,7 @@ export function Loading({ children, fonts }: LoadingProps) {
           </div>
         </div>
       )}
-    </>
+    </LoadingReadyContext.Provider>
   );
 }
 

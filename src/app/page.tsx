@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { SkkTyping } from "@/src/components/SkkTyping";
 
+import { HomeIntro } from "./HomeIntro";
 import styles from "./page.module.css";
 
 const titleTypingPlan = [
@@ -91,7 +92,7 @@ export default function Home() {
   return (
     <div className={styles.page}>
       <main className={styles.main}>
-        <div className={styles.container}>
+        <HomeIntro>
           <h1>
             <SkkTyping label="名称未定" plan={titleTypingPlan} />
           </h1>
@@ -110,7 +111,7 @@ export default function Home() {
               <SkkTyping label="[ 外部接続 ]" plan={socialsLinkTypingPlan} />
             </Link>
           </div>
-        </div>
+        </HomeIntro>
       </main>
     </div>
   );

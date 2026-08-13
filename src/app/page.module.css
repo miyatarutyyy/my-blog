@@ -43,6 +43,10 @@
   margin-top: 16px;
   background-color: var(--color-text-primary);
   transform-origin: left center;
+  transform: scaleX(0);
+}
+
+.containerReady .divider {
   animation: divider-grow 1000ms ease-out 1500ms both;
 }
 
