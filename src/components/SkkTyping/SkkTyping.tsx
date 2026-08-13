@@ -16,8 +16,11 @@ import {
 
 import styles from "./SkkTyping.module.css";
 
-const FRAME_INTERVAL_MS = 95;
+const START_DELAY_MS = 120;
+const FRAME_INTERVAL_MS = 160;
 const INTERSECTION_THRESHOLD = 0.35;
+
+type PlaybackStatus = "idle" | "playing";
 
 type SkkTypingProps = {
   label: string;
@@ -28,7 +31,8 @@ type SkkTypingProps = {
 export function SkkTyping({ label, plan, className }: SkkTypingProps) {
   const rootRef = useRef<HTMLSpanElement>(null);
   const hasPlayedRef = useRef(false);
-  const [frameIndex, setFrameIndex] = useState<number | null>(null);
+  const [playbackStatus, setPlaybackStatus] = useState<PlaybackStatus>("idle");
+  const [frameIndex, setFrameIndex] = useState(0);
   const reduceMotion = usePrefersReducedMotion();
 
   const compileResult = useMemo(() => {
@@ -41,7 +45,7 @@ export function SkkTyping({ label, plan, className }: SkkTypingProps) {
     }
 
     if (process.env.NODE_ENV !== "production") {
-      console.warn("Failed to compile SKK typing plan.", compileResult.error);
+      console.error("Failed to compile SKK typing plan.", compileResult.error);
     }
   }, [compileResult]);
 
@@ -60,16 +64,14 @@ export function SkkTyping({ label, plan, className }: SkkTypingProps) {
     }
 
     let startTimer: ReturnType<typeof setTimeout> | undefined;
-    let frameTimer: ReturnType<typeof setInterval> | undefined;
+    let observer: IntersectionObserver | undefined;
 
     const stopTimers = () => {
       if (startTimer) {
         clearTimeout(startTimer);
       }
 
-      if (frameTimer) {
-        clearInterval(frameTimer);
-      }
+      observer?.disconnect();
     };
 
     const play = () => {
@@ -79,63 +81,66 @@ export function SkkTyping({ label, plan, className }: SkkTypingProps) {
 
       startTimer = setTimeout(() => {
         hasPlayedRef.current = true;
+        setPlaybackStatus("playing");
         setFrameIndex(0);
-
-        frameTimer = setInterval(() => {
-          setFrameIndex((currentFrameIndex) => {
-            if (currentFrameIndex === null) {
-              return 0;
-            }
-
-            const nextFrameIndex = currentFrameIndex + 1;
-
-            if (nextFrameIndex >= compileResult.frames.length) {
-              if (frameTimer) {
-                clearInterval(frameTimer);
-              }
-
-              return compileResult.frames.length - 1;
-            }
-
-            return nextFrameIndex;
-          });
-        }, FRAME_INTERVAL_MS);
-      }, FRAME_INTERVAL_MS);
+      }, START_DELAY_MS);
     };
 
-    if (!("IntersectionObserver" in window)) {
-      play();
+    const animationFrame = requestAnimationFrame(() => {
+      if (isElementInViewport(root) || !("IntersectionObserver" in window)) {
+        play();
+        return;
+      }
 
-      return stopTimers;
-    }
+      observer = new IntersectionObserver(
+        (entries) => {
+          if (entries.some((entry) => entry.isIntersecting)) {
+            play();
+            observer?.disconnect();
+          }
+        },
+        { threshold: INTERSECTION_THRESHOLD }
+      );
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-          play();
-          observer.disconnect();
-        }
-      },
-      { threshold: INTERSECTION_THRESHOLD }
-    );
-
-    observer.observe(root);
+      observer.observe(root);
+    });
 
     return () => {
-      observer.disconnect();
+      cancelAnimationFrame(animationFrame);
       stopTimers();
     };
   }, [compileResult, reduceMotion]);
 
+  useEffect(() => {
+    if (
+      playbackStatus !== "playing" ||
+      !compileResult.ok ||
+      compileResult.frames.length === 0
+    ) {
+      return;
+    }
+
+    if (frameIndex >= compileResult.frames.length - 1) {
+      return;
+    }
+
+    const frameTimer = setTimeout(() => {
+      setFrameIndex((currentFrameIndex) => {
+        return Math.min(currentFrameIndex + 1, compileResult.frames.length - 1);
+      });
+    }, FRAME_INTERVAL_MS);
+
+    return () => {
+      clearTimeout(frameTimer);
+    };
+  }, [compileResult, frameIndex, playbackStatus]);
+
   const rootClassName = className ? `${styles.root} ${className}` : styles.root;
-  const frame =
-    compileResult.ok && frameIndex !== null
-      ? compileResult.frames[frameIndex]
-      : null;
+  const frame = compileResult.ok ? compileResult.frames[frameIndex] : null;
   const showCursor =
     compileResult.ok &&
     !reduceMotion &&
-    frameIndex !== null &&
+    playbackStatus === "playing" &&
     frameIndex < compileResult.frames.length - 1;
   const visualLabel = reduceMotion || !compileResult.ok ? label : null;
   const reserveText = compileResult.ok
@@ -147,7 +152,12 @@ export function SkkTyping({ label, plan, className }: SkkTypingProps) {
       <span className={styles.visual} aria-hidden="true">
         <span className={styles.reserve}>{reserveText}</span>
         <span className={styles.live}>
-          {visualLabel ?? (frame ? <SkkFrameView frame={frame} /> : label)}
+          {visualLabel ??
+            (playbackStatus === "idle" || !frame ? (
+              label
+            ) : (
+              <SkkFrameView frame={frame} />
+            ))}
           {showCursor ? <span className={styles.cursor} /> : null}
         </span>
       </span>
@@ -166,6 +176,21 @@ function getLongestDisplayText(label: string, frames: readonly SkkFrame[]) {
 
 function formatFrame(frame: SkkFrame) {
   return `${frame.committed}${frame.marker ?? ""}${frame.composing}`;
+}
+
+function isElementInViewport(element: Element) {
+  const rect = element.getBoundingClientRect();
+  const viewportHeight =
+    window.innerHeight || document.documentElement.clientHeight;
+  const viewportWidth =
+    window.innerWidth || document.documentElement.clientWidth;
+
+  return (
+    rect.top < viewportHeight &&
+    rect.bottom > 0 &&
+    rect.left < viewportWidth &&
+    rect.right > 0
+  );
 }
 
 function SkkFrameView({ frame }: { frame: SkkFrame }) {
