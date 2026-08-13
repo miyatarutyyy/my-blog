@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 
 import { getPrimaryFontFamily } from "./font-family";
@@ -12,13 +12,19 @@ import {
   type LoadingFontDefinition,
   type LoadingFontState,
 } from "./loading-state";
-import { LoadingReadyContext } from "./loading-context";
 import styles from "./Loading.module.css";
 
 const FONT_LOAD_TIMEOUT_MS = 2500;
 const FRAME_INTERVAL_MS = 220;
 const MIN_FONT_ANIMATION_MS = 660;
-const FINAL_READY_DELAY_MS = 1000;
+const FINAL_TRANSITION_MS = 1500;
+const CLEAR_ANIMATION_RATIO = 0.7;
+const CLEAR_ANIMATION_MS = FINAL_TRANSITION_MS * CLEAR_ANIMATION_RATIO;
+const FINAL_STILL_DELAY_MS = FINAL_TRANSITION_MS - CLEAR_ANIMATION_MS;
+
+type LoadingOverlayStyle = CSSProperties & {
+  "--loading-clear-animation-duration": string;
+};
 
 type LoadingProps = {
   children: ReactNode;
@@ -37,9 +43,13 @@ export function Loading({ children, fonts }: LoadingProps) {
   );
   const [loadingFrame, setLoadingFrame] = useState(0);
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
   const [isReady, setIsReady] = useState(false);
   const activeSampleFont =
     fontStates.find((font) => font.id === activeSampleFontId) ?? fontStates[0];
+  const overlayStyle: LoadingOverlayStyle = {
+    "--loading-clear-animation-duration": `${CLEAR_ANIMATION_MS}ms`,
+  };
 
   useEffect(() => {
     const fontFaceSet = document.fonts;
@@ -112,7 +122,15 @@ export function Loading({ children, fonts }: LoadingProps) {
         setDisplayedFontStatus(font.id, status ?? "failed");
       }
 
-      await wait(FINAL_READY_DELAY_MS);
+      await wait(FINAL_STILL_DELAY_MS);
+
+      if (!isActive) {
+        return;
+      }
+
+      setIsClearing(true);
+
+      await wait(CLEAR_ANIMATION_MS);
 
       if (isActive) {
         setIsReady(true);
@@ -158,50 +176,49 @@ export function Loading({ children, fonts }: LoadingProps) {
     };
   }, [isReady, reduceMotion]);
 
+  if (isReady) {
+    return children;
+  }
+
   return (
-    <LoadingReadyContext.Provider value={isReady}>
-      <div
-        aria-hidden={!isReady}
-        className={isReady ? styles.contentReady : styles.contentPending}
-      >
-        {children}
-      </div>
-      {!isReady ? (
-        <div className={styles.overlay} role="status" aria-live="polite">
-          <div className={styles.panel}>
-            <div className={styles.sample} aria-hidden="true">
-              {activeSampleFont ? (
-                <span style={{ fontFamily: activeSampleFont.fontFamily }}>
-                  {activeSampleFont.sampleText}
-                </span>
-              ) : null}
-            </div>
-            <span className={styles.divider} aria-hidden="true" />
-            <ul className={styles.fontList}>
-              {fontStates.map((font) => (
-                <li
-                  className={`${styles.fontItem} ${styles[getFontStatusClassName(font.status)]}`}
-                  key={font.id}
-                >
-                  <span className={styles.status}>
-                    {getFontStatusLabel(
-                      font.status,
-                      reduceMotion ? 1 : loadingFrame
-                    )}
-                  </span>
-                  <span
-                    className={styles.fontName}
-                    style={{ fontFamily: font.fontFamily }}
-                  >
-                    {font.label}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
+    <div
+      className={`${styles.overlay} ${isClearing ? styles.overlayClearing : ""}`}
+      role="status"
+      aria-live="polite"
+      style={overlayStyle}
+    >
+      <div className={styles.panel}>
+        <div className={styles.sample} aria-hidden="true">
+          {activeSampleFont ? (
+            <span style={{ fontFamily: activeSampleFont.fontFamily }}>
+              {activeSampleFont.sampleText}
+            </span>
+          ) : null}
         </div>
-      ) : null}
-    </LoadingReadyContext.Provider>
+        <span className={styles.divider} aria-hidden="true" />
+        <ul className={styles.fontList}>
+          {fontStates.map((font) => (
+            <li
+              className={`${styles.fontItem} ${styles[getFontStatusClassName(font.status)]}`}
+              key={font.id}
+            >
+              <span className={styles.status}>
+                {getFontStatusLabel(
+                  font.status,
+                  reduceMotion ? 1 : loadingFrame
+                )}
+              </span>
+              <span
+                className={styles.fontName}
+                style={{ fontFamily: font.fontFamily }}
+              >
+                {font.label}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
   );
 }
 

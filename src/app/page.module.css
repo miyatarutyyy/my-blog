@@ -42,6 +42,8 @@
   height: 1px;
   margin-top: 16px;
   background-color: var(--color-text-primary);
+  transform-origin: left center;
+  animation: divider-grow 1000ms ease-out 1500ms both;
 }
 
 .container p {
@@ -81,5 +83,22 @@
     max-width: 480px;
     font-size: 64px;
     line-height: 72px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .divider {
+    animation: none;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes divider-grow {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
   }
 }

@@ -4,10 +4,27 @@ import { SkkTyping } from "@/src/components/SkkTyping";
 
 import styles from "./page.module.css";
 
+// const titleTypingPlan = [
+//   {
+//     mode: "literal",
+//     input: "ARCHIVYYY",
+//   },
+// ] as const;
+
 const titleTypingPlan = [
   {
-    mode: "literal",
-    input: "ARCHIVYYY",
+    input: "meishou",
+    reading: "めいしょう",
+    output: "めいしょう",
+    convert: true,
+    candidates: ["名称"],
+  },
+  {
+    input: "mitei",
+    reading: "みてい",
+    output: "みてい",
+    convert: true,
+    candidates: ["未定"],
   },
 ] as const;
 

@@ -13,11 +13,10 @@ import {
   type SkkFrame,
   type SkkInputPlan,
 } from "@/lib/skk-typing";
-import { useLoadingReady } from "@/src/components/Loading";
 
 import styles from "./SkkTyping.module.css";
 
-const START_DELAY_MS = 1000;
+const START_DELAY_MS = 400;
 const FRAME_INTERVAL_MS = 100;
 const INTERSECTION_THRESHOLD = 0.5;
 
@@ -35,7 +34,6 @@ export function SkkTyping({ label, plan, className }: SkkTypingProps) {
   const [playbackStatus, setPlaybackStatus] = useState<PlaybackStatus>("idle");
   const [frameIndex, setFrameIndex] = useState(0);
   const reduceMotion = usePrefersReducedMotion();
-  const loadingReady = useLoadingReady();
 
   const compileResult = useMemo(() => {
     return compileSkkFramesSafely(plan, label);
@@ -53,7 +51,6 @@ export function SkkTyping({ label, plan, className }: SkkTypingProps) {
 
   useEffect(() => {
     if (
-      !loadingReady ||
       reduceMotion ||
       !compileResult.ok ||
       compileResult.frames.length === 0
@@ -112,7 +109,7 @@ export function SkkTyping({ label, plan, className }: SkkTypingProps) {
       cancelAnimationFrame(animationFrame);
       stopTimers();
     };
-  }, [compileResult, loadingReady, reduceMotion]);
+  }, [compileResult, reduceMotion]);
 
   useEffect(() => {
     if (
@@ -152,9 +149,7 @@ export function SkkTyping({ label, plan, className }: SkkTypingProps) {
         <span className={styles.reserve}>{label}</span>
         <span className={styles.live}>
           {visualLabel ??
-            (playbackStatus === "idle" || !frame ? (
-              label
-            ) : (
+            (playbackStatus === "idle" || !frame ? null : (
               <SkkFrameView frame={frame} />
             ))}
           {showCursor ? <span className={styles.cursor} /> : null}
