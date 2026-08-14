@@ -35,15 +35,10 @@ const homeLinkTypingPlan = [
   {
     input: "modo",
     reading: "もど",
-    output: "戻",
+    okuriKey: "r",
+    output: "戻る",
     convert: true,
-    candidates: ["戻"],
-  },
-  {
-    input: "ru",
-    reading: "る",
-    output: "る",
-    convert: false,
+    candidates: ["戻る"],
   },
   {
     mode: "literal",

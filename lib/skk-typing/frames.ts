@@ -99,6 +99,15 @@ function compileRomajiSegment(
     });
   }
 
+  if (segment.okuriKey) {
+    frames.push({
+      committed: initialCommitted,
+      composing: `${segment.reading}${segment.okuriKey}`,
+      marker: "▽",
+      phase: "preedit",
+    });
+  }
+
   for (const candidate of normalizeCandidates(segment)) {
     frames.push({
       committed: initialCommitted,
