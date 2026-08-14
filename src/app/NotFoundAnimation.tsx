@@ -58,28 +58,31 @@ export function NotFoundAnimation() {
     : styles.notFoundMark;
 
   return (
-    <>
-      <div className={notFoundMarkClassName}>
-        <span className={styles.sideGlyph} aria-hidden="true">
-          不
-        </span>
-        <div className={styles.centerBlock}>
-          <h1 className={styles.statusCode}>
-            <SkkTyping label="404" plan={statusCodeTypingPlan} />
-          </h1>
-          <span className={styles.divider} aria-hidden="true" />
-          <p className={styles.message}>
-            <SkkTyping label="NOT FOUND" plan={messageTypingPlan} />
-          </p>
-        </div>
-        <span className={styles.sideGlyph} aria-hidden="true">
-          在
-        </span>
+    <div className={notFoundMarkClassName}>
+      <span
+        className={`${styles.sideGlyph} ${styles.leftGlyph}`}
+        aria-hidden="true"
+      >
+        不
+      </span>
+      <div className={styles.centerBlock}>
+        <h1 className={styles.statusCode}>
+          <SkkTyping label="404" plan={statusCodeTypingPlan} />
+        </h1>
+        <span className={styles.divider} aria-hidden="true" />
+        <p className={styles.message}>
+          <SkkTyping label="NOT FOUND" plan={messageTypingPlan} />
+        </p>
       </div>
-    </>
+      <span
+        className={`${styles.sideGlyph} ${styles.rightGlyph}`}
+        aria-hidden="true"
+      >
+        在
+      </span>
+      <Link className={styles.homeLink} href="/">
+        <SkkTyping label="[ HOME へ戻る ]" plan={homeLinkTypingPlan} />
+      </Link>
+    </div>
   );
 }
-
-// <Link className={styles.homeLink} href="/">
-//   <SkkTyping label="[ HOME へ戻る ]" plan={homeLinkTypingPlan} />
-// </Link>
