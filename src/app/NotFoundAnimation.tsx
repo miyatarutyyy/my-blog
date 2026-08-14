@@ -76,9 +76,10 @@ export function NotFoundAnimation() {
           在
         </span>
       </div>
-      <Link className={styles.homeLink} href="/">
-        <SkkTyping label="[ HOME へ戻る ]" plan={homeLinkTypingPlan} />
-      </Link>
     </>
   );
 }
+
+// <Link className={styles.homeLink} href="/">
+//   <SkkTyping label="[ HOME へ戻る ]" plan={homeLinkTypingPlan} />
+// </Link>
