@@ -61,6 +61,7 @@ test.describe("public routing", () => {
     const response = await request.get("/unknown-route");
 
     expect(response.status()).toBe(404);
-    expect(await response.text()).toContain("Page not found");
+    expect(await response.text()).toContain("404");
+    expect(await response.text()).toContain("NOT FOUND");
   });
 });

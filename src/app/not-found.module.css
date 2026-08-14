@@ -1,0 +1,59 @@
+.main {
+  display: flex;
+  min-height: 100svh;
+  width: 100%;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-page-block) var(--space-page-inline);
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-soukou-mincho), var(--font-geist-sans), serif;
+  text-align: center;
+}
+
+.statusCode {
+  max-width: 320px;
+  font-size: 48px;
+  font-weight: 600;
+  line-height: 56px;
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.divider { 
+    width: 320px; 
+    height: 1px; 
+    margin-top: 16px; 
+    background-color: var(--color-text-primary); 
+ } 
+
+.message {
+  margin-top: 16px;
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 1.4;
+  letter-spacing: 0;
+}
+
+.homeLink {
+  margin-top: 24px;
+  color: var(--color-text-primary);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+@media (min-width: 768px) {
+  .statusCode {
+    max-width: 480px;
+    font-size: 64px;
+    line-height: 72px;
+  }
+
+  .message {
+    font-size: 32px;
+  }
+}
