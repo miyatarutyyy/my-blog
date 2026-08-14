@@ -94,6 +94,28 @@ describe("compileSkkFrames", () => {
     ]);
   });
 
+  test("adds an okuri key preedit frame before conversion candidates", () => {
+    const frames = compileSkkFrames([
+      {
+        input: "oku",
+        reading: "おく",
+        okuriKey: "r",
+        output: "送り",
+        convert: true,
+        candidates: ["送り"],
+      },
+    ]);
+
+    expect(frameTexts(frames)).toEqual([
+      "▽お",
+      "▽おk",
+      "▽おく",
+      "▽おくr",
+      "▼送り",
+      "送り",
+    ]);
+  });
+
   test("generates direct frames for non-converting romaji", () => {
     const frames = compileSkkFrames([
       {
@@ -173,6 +195,34 @@ describe("compileSkkFrames", () => {
           reading: "へんかん",
           output: "変換",
           convert: false,
+        },
+      ])
+    ).toThrow(SkkPlanError);
+  });
+
+  test("rejects an okuri key for direct romaji", () => {
+    expect(() =>
+      compileSkkFrames([
+        {
+          input: "oku",
+          reading: "おく",
+          output: "おく",
+          convert: false,
+          okuriKey: "r",
+        },
+      ])
+    ).toThrow(SkkPlanError);
+  });
+
+  test("rejects invalid okuri keys", () => {
+    expect(() =>
+      compileSkkFrames([
+        {
+          input: "oku",
+          reading: "おく",
+          output: "送り",
+          convert: true,
+          okuriKey: "ri",
         },
       ])
     ).toThrow(SkkPlanError);

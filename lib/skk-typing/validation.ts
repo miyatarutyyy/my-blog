@@ -28,4 +28,12 @@ export function validateRomajiSegment(segment: RomajiSegment) {
       "Direct romaji segment reading must match output when convert is false."
     );
   }
+
+  if (!segment.convert && segment.okuriKey) {
+    throw new SkkPlanError("Okuri key requires conversion.");
+  }
+
+  if (segment.okuriKey && !/^[a-z]$/.test(segment.okuriKey)) {
+    throw new SkkPlanError("Okuri key must be a single lowercase romaji key.");
+  }
 }

@@ -5,6 +5,7 @@ export type RomajiSegment = {
   output: string;
   convert: boolean;
   candidates?: readonly string[];
+  okuriKey?: string;
 };
 
 export type LiteralSegment = {
