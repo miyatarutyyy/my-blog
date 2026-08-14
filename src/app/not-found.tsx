@@ -1,13 +1,11 @@
-import Link from "next/link";
+import { NotFoundAnimation } from "./NotFoundAnimation";
+
+import styles from "./not-found.module.css";
 
 export default function NotFound() {
   return (
-    <main>
-      <h1>Page not found</h1>
-      <p>The requested page does not exist.</p>
-      <p>
-        <Link href="/">Back to home</Link>
-      </p>
+    <main className={styles.main} aria-label="Page not found">
+      <NotFoundAnimation />
     </main>
   );
 }

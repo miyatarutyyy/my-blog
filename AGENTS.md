@@ -265,6 +265,19 @@ Keep changes to the minimum scope necessary to solve the problem.
 
 If another issue is found nearby, do not expand the scope without permission. Report it separately.
 
+### 5.5 Git Commit Messages
+
+When Codex creates commits in this repository, use Conventional Commits.
+
+Examples:
+
+* `feat: add article detail page`
+* `fix: revalidate article detail after publish`
+* `docs: record cache strategy decision`
+* `test: add routing coverage for not found pages`
+
+Choose the type from the actual purpose of the change, such as `feat`, `fix`, `docs`, `test`, `refactor`, `chore`, or `style`.
+
 ---
 
 ## 6. Next.js Implementation Rules
