@@ -27,11 +27,18 @@ type SkkTypingProps = {
   label: string;
   plan: SkkInputPlan;
   className?: string;
+  onComplete?: () => void;
 };
 
-export function SkkTyping({ label, plan, className }: SkkTypingProps) {
+export function SkkTyping({
+  label,
+  plan,
+  className,
+  onComplete,
+}: SkkTypingProps) {
   const rootRef = useRef<HTMLSpanElement>(null);
   const hasPlayedRef = useRef(false);
+  const hasCompletedRef = useRef(false);
   const [playbackStatus, setPlaybackStatus] = useState<PlaybackStatus>("idle");
   const [frameIndex, setFrameIndex] = useState(0);
   const reduceMotion = usePrefersReducedMotion();
@@ -137,6 +144,37 @@ export function SkkTyping({ label, plan, className }: SkkTypingProps) {
       clearTimeout(frameTimer);
     };
   }, [compileResult, frameIndex, playbackStatus]);
+
+  useEffect(() => {
+    if (!loadingReady || hasCompletedRef.current) {
+      return;
+    }
+
+    const completedWithoutPlayback =
+      reduceMotion ||
+      !compileResult.ok ||
+      (compileResult.ok && compileResult.frames.length === 0);
+
+    const reachedFinalFrame =
+      playbackStatus === "playing" &&
+      compileResult.ok &&
+      compileResult.frames.length > 0 &&
+      frameIndex >= compileResult.frames.length - 1;
+
+    if (!completedWithoutPlayback && !reachedFinalFrame) {
+      return;
+    }
+
+    hasCompletedRef.current = true;
+    onComplete?.();
+  }, [
+    compileResult,
+    frameIndex,
+    loadingReady,
+    onComplete,
+    playbackStatus,
+    reduceMotion,
+  ]);
 
   const rootClassName = className ? `${styles.root} ${className}` : styles.root;
   const frame = compileResult.ok ? compileResult.frames[frameIndex] : null;

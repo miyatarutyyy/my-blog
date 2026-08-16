@@ -1,11 +1,25 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 
 import { SkkTyping } from "@/src/components/SkkTyping";
-import { useLoadingReady } from "@/src/components/Loading/loading-ready";
 
 import styles from "./not-found.module.css";
+
+type TypingCompletion = {
+  statusCode: boolean;
+  message: boolean;
+  homeLink: boolean;
+};
+
+type TypingTarget = keyof TypingCompletion;
+
+const initialTypingCompletion: TypingCompletion = {
+  statusCode: false,
+  message: false,
+  homeLink: false,
+};
 
 const statusCodeTypingPlan = [
   {
@@ -52,10 +66,31 @@ const homeLinkTypingPlan = [
 ] as const;
 
 export function NotFoundAnimation() {
-  const loadingReady = useLoadingReady();
-  const notFoundMarkClassName = loadingReady
-    ? `${styles.notFoundMark} ${styles.notFoundMarkReady}`
+  const [typingCompletion, setTypingCompletion] = useState(
+    initialTypingCompletion
+  );
+
+  const allTypingCompleted =
+    typingCompletion.statusCode &&
+    typingCompletion.message &&
+    typingCompletion.homeLink;
+
+  const notFoundMarkClassName = allTypingCompleted
+    ? `${styles.notFoundMark} ${styles.notFoundMarkReveal}`
     : styles.notFoundMark;
+
+  const markTypingComplete = (target: TypingTarget) => {
+    setTypingCompletion((current) => {
+      if (current[target]) {
+        return current;
+      }
+
+      return {
+        ...current,
+        [target]: true,
+      };
+    });
+  };
 
   return (
     <div className={notFoundMarkClassName}>
@@ -67,11 +102,19 @@ export function NotFoundAnimation() {
       </span>
       <div className={styles.centerBlock}>
         <h1 className={styles.statusCode}>
-          <SkkTyping label="404" plan={statusCodeTypingPlan} />
+          <SkkTyping
+            label="404"
+            plan={statusCodeTypingPlan}
+            onComplete={() => markTypingComplete("statusCode")}
+          />
         </h1>
         <span className={styles.divider} aria-hidden="true" />
         <p className={styles.message}>
-          <SkkTyping label="NOT FOUND" plan={messageTypingPlan} />
+          <SkkTyping
+            label="NOT FOUND"
+            plan={messageTypingPlan}
+            onComplete={() => markTypingComplete("message")}
+          />
         </p>
       </div>
       <span
@@ -81,7 +124,11 @@ export function NotFoundAnimation() {
         在
       </span>
       <Link className={styles.homeLink} href="/">
-        <SkkTyping label="[ HOME へ戻る ]" plan={homeLinkTypingPlan} />
+        <SkkTyping
+          label="[ HOME へ戻る ]"
+          plan={homeLinkTypingPlan}
+          onComplete={() => markTypingComplete("homeLink")}
+        />
       </Link>
     </div>
   );
