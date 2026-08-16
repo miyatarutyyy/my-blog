@@ -52,8 +52,7 @@
     calc(var(--divider-width) / 1.9)
   );
   --home-link-block-size: 24px;
-  --side-glyph-reveal-delay: 3000ms;
-  --side-glyph-reveal-duration: 100ms;
+  --side-glyph-reveal-duration: 200ms;
 
   display: grid;
   place-self: center;
@@ -118,9 +117,8 @@
   transform: translateY(0);
 }
 
-.notFoundMarkReady .sideGlyph::after {
-  animation: side-glyph-reveal var(--side-glyph-reveal-duration) ease-out
-    var(--side-glyph-reveal-delay) both;
+.notFoundMarkReveal .sideGlyph::after {
+  animation: side-glyph-reveal var(--side-glyph-reveal-duration) ease-out both;
 }
 
 .statusCode {
@@ -198,7 +196,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sideGlyph::after {
+  .notFoundMarkReveal .sideGlyph::after {
     animation: none;
     transform: translateY(100%);
   }
