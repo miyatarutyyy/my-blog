@@ -1,5 +1,4 @@
-import Link from "next/link";
-
+import { TransitionLink } from "@/src/components/PageTransition";
 import { SkkTyping } from "@/src/components/SkkTyping";
 
 import { HomeIntro } from "./HomeIntro";
@@ -104,12 +103,12 @@ export default function Home() {
             />
           </p>
           <div className={styles.links}>
-            <Link href="/blog">
+            <TransitionLink href="/blog">
               <SkkTyping label="[ 記事一覧 ]" plan={blogLinkTypingPlan} />
-            </Link>
-            <Link href="/socials">
+            </TransitionLink>
+            <TransitionLink href="/socials">
               <SkkTyping label="[ 外部接続 ]" plan={socialsLinkTypingPlan} />
-            </Link>
+            </TransitionLink>
           </div>
         </HomeIntro>
       </main>

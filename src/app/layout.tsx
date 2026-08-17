@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { Loading } from "@/src/components/Loading";
+import { PageTransitionProvider } from "@/src/components/PageTransition";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -68,7 +69,7 @@ export default function RootLayout({
             },
           ]}
         >
-          {children}
+          <PageTransitionProvider>{children}</PageTransitionProvider>
         </Loading>
       </body>
     </html>

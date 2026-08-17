@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { TransitionLink } from "@/src/components/PageTransition";
 
 export default function BlogPostNotFound() {
   return (
@@ -6,7 +6,7 @@ export default function BlogPostNotFound() {
       <h1>Article not found</h1>
       <p>The requested article does not exist.</p>
       <p>
-        <Link href="/blog">Back to blog index</Link>
+        <TransitionLink href="/blog">Back to blog index</TransitionLink>
       </p>
     </main>
   );

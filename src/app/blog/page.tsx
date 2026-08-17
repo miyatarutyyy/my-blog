@@ -1,6 +1,5 @@
-import Link from "next/link";
-
 import { getPosts } from "@/lib/posts";
+import { TransitionLink } from "@/src/components/PageTransition";
 
 import styles from "./page.module.css";
 
@@ -17,7 +16,9 @@ export default async function BlogIndexPage() {
           {posts.map((post) => {
             return (
               <li className={styles.postItem} key={post.slug}>
-                <Link href={`/blog/${post.slug}`}>{post.title}</Link>
+                <TransitionLink href={`/blog/${post.slug}`}>
+                  {post.title}
+                </TransitionLink>
                 {post.date ? (
                   <time className={styles.postDate} dateTime={post.date}>
                     {post.date}

@@ -1,0 +1,53 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  min-height: 100svh;
+  pointer-events: none;
+  background: var(--color-background);
+  will-change: transform;
+}
+
+.exiting {
+  transform: scaleX(0);
+  transform-origin: right center;
+  animation: page-transition-exit 420ms ease-in-out forwards;
+}
+
+.covered {
+  transform: scaleX(1);
+}
+
+.entering {
+  transform: scaleX(1);
+  transform-origin: left center;
+  animation: page-transition-enter 260ms ease-in-out forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .exiting,
+  .entering {
+    animation: none;
+    transform: scaleX(1);
+  }
+}
+
+@keyframes page-transition-exit {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes page-transition-enter {
+  from {
+    transform: scaleX(1);
+  }
+
+  to {
+    transform: scaleX(0);
+  }
+}
