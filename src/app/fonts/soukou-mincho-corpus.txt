@@ -2,35 +2,4 @@
 # Add static SoukouMincho UI text with data-font="soukou".
 # Add hard-to-infer text to *.soukou-corpus.txt fragments.
 
-不
-404
-▽▼
-NOT FOUND
-在
-[ HOME へ戻る ]
-[ HOME
-he
-へ
-modo
-もど
-戻
-ru
-る
- ]
-名称未定
-meisyou
-めいしょう
-名称
-mitei
-みてい
-未定
-たるてぃのブログサイト
-taruthino
-たるてぃの
-burogusaito
-ぶろぐさいと
-ブログサイト
-永
-SoukouMincho
-
-ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789[] -
+ -0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz▼▽ぃいうぐさしたてとどのぶへみめもょるろイグサトブロ不名在定戻未永称
