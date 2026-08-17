@@ -4,6 +4,7 @@ import { getPrimaryFontFamily } from "@/src/components/Loading/font-family";
 import {
   createInitialFontStates,
   getFontStatusLabel,
+  getInitialLoadingMode,
   getNextLoadingFrame,
   getWebFonts,
   isFontLoadSettled,
@@ -81,5 +82,39 @@ describe("Loading font states", () => {
     expect(isFontLoadSettled(webFont)).toBe(false);
     expect(isFontLoadSettled({ ...webFont, status: "timeout" })).toBe(true);
     expect(isFontLoadSettled({ ...webFont, status: "failed" })).toBe(true);
+  });
+
+  test("plays the boot animation when the tab has not seen it", () => {
+    expect(
+      getInitialLoadingMode({
+        hasSeenBootAnimation: false,
+        areWebFontsReady: true,
+      })
+    ).toBe("boot");
+
+    expect(
+      getInitialLoadingMode({
+        hasSeenBootAnimation: false,
+        areWebFontsReady: false,
+      })
+    ).toBe("boot");
+  });
+
+  test("skips the boot animation when the tab has seen it and fonts are ready", () => {
+    expect(
+      getInitialLoadingMode({
+        hasSeenBootAnimation: true,
+        areWebFontsReady: true,
+      })
+    ).toBe("ready");
+  });
+
+  test("waits for fonts without boot animation when the tab has seen it but fonts are not ready", () => {
+    expect(
+      getInitialLoadingMode({
+        hasSeenBootAnimation: true,
+        areWebFontsReady: false,
+      })
+    ).toBe("wait-for-fonts");
   });
 });

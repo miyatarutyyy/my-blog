@@ -15,6 +15,8 @@ export type LoadingFontState = LoadingFontDefinition & {
   status: LoadingFontStatus;
 };
 
+export type InitialLoadingMode = "boot" | "wait-for-fonts" | "ready";
+
 const LOADING_STATUS_LABELS = [
   "[ #.... ]",
   "[ .#... ]",
@@ -69,4 +71,22 @@ export function isFontLoadSettled(font: LoadingFontState) {
     font.status === "timeout" ||
     font.status === "failed"
   );
+}
+
+export function getInitialLoadingMode({
+  hasSeenBootAnimation,
+  areWebFontsReady,
+}: {
+  hasSeenBootAnimation: boolean;
+  areWebFontsReady: boolean;
+}): InitialLoadingMode {
+  if (!hasSeenBootAnimation) {
+    return "boot";
+  }
+
+  if (areWebFontsReady) {
+    return "ready";
+  }
+
+  return "wait-for-fonts";
 }

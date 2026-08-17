@@ -6,15 +6,18 @@ import { useEffect, useMemo, useState } from "react";
 import { getPrimaryFontFamily } from "./font-family";
 import {
   createInitialFontStates,
+  getInitialLoadingMode,
   getFontStatusLabel,
   getNextLoadingFrame,
   getWebFonts,
+  type InitialLoadingMode,
   type LoadingFontDefinition,
   type LoadingFontState,
 } from "./loading-state";
 import { LoadingReadyContext } from "./loading-ready";
 import styles from "./Loading.module.css";
 
+const BOOT_ANIMATION_SESSION_KEY = "archivyyy:boot-animation-seen";
 const FONT_LOAD_TIMEOUT_MS = 2500;
 const FRAME_INTERVAL_MS = 220;
 const MIN_FONT_ANIMATION_MS = 660;
@@ -32,6 +35,8 @@ type LoadingProps = {
   fonts: readonly LoadingFontDefinition[];
 };
 
+type LoadingDisplayMode = "checking" | InitialLoadingMode;
+
 export function Loading({ children, fonts }: LoadingProps) {
   const fontDefinitions = useMemo(() => fonts, [fonts]);
   const [fontStates, setFontStates] = useState<LoadingFontState[]>(() =>
@@ -46,11 +51,17 @@ export function Loading({ children, fonts }: LoadingProps) {
   const [reduceMotion, setReduceMotion] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [displayMode, setDisplayMode] =
+    useState<LoadingDisplayMode>("checking");
   const activeSampleFont =
     fontStates.find((font) => font.id === activeSampleFontId) ?? fontStates[0];
   const overlayStyle: LoadingOverlayStyle = {
     "--loading-clear-animation-duration": `${CLEAR_ANIMATION_MS}ms`,
   };
+  const shouldShowOverlay = displayMode === "boot" && !isReady;
+  const shouldBlockContent =
+    (displayMode === "checking" || displayMode === "wait-for-fonts") &&
+    !isReady;
 
   useEffect(() => {
     const fontFaceSet = document.fonts;
@@ -62,6 +73,11 @@ export function Loading({ children, fonts }: LoadingProps) {
         const timeoutId = window.setTimeout(resolve, ms);
         timeoutIds.push(timeoutId);
       });
+    };
+
+    const completeLoading = () => {
+      setDisplayMode("ready");
+      setIsReady(true);
     };
 
     const setDisplayedFontStatus = (
@@ -96,11 +112,19 @@ export function Loading({ children, fonts }: LoadingProps) {
     };
 
     const webFonts = getWebFonts(fontDefinitions);
-    const fontLoadResults = new Map(
-      webFonts.map((font) => [font.id, loadFont(font)])
-    );
+    const areWebFontsReady = webFonts.every((font) => {
+      const fontQuery = `1rem ${getPrimaryFontFamily(font.fontFamily)}`;
 
-    async function playLoadingSequence() {
+      return !fontFaceSet || fontFaceSet.check(fontQuery);
+    });
+
+    async function waitForWebFontsWithoutBootAnimation() {
+      await Promise.all(webFonts.map((font) => loadFont(font)));
+    }
+
+    async function playLoadingSequence(
+      fontLoadResults: Map<string, Promise<LoadingFontState["status"]>>
+    ) {
       await wait(0);
 
       for (const font of webFonts) {
@@ -134,11 +158,45 @@ export function Loading({ children, fonts }: LoadingProps) {
       await wait(CLEAR_ANIMATION_MS);
 
       if (isActive) {
-        setIsReady(true);
+        completeLoading();
       }
     }
 
-    playLoadingSequence();
+    async function runLoading() {
+      const initialLoadingMode = getInitialLoadingMode({
+        hasSeenBootAnimation: hasSeenBootAnimation(),
+        areWebFontsReady,
+      });
+
+      setDisplayMode(initialLoadingMode);
+
+      if (initialLoadingMode === "ready") {
+        completeLoading();
+        return;
+      }
+
+      if (initialLoadingMode === "wait-for-fonts") {
+        await waitForWebFontsWithoutBootAnimation();
+
+        if (isActive) {
+          completeLoading();
+        }
+
+        return;
+      }
+
+      const fontLoadResults = new Map(
+        webFonts.map((font) => [font.id, loadFont(font)])
+      );
+
+      await playLoadingSequence(fontLoadResults);
+
+      if (isActive) {
+        markBootAnimationSeen();
+      }
+    }
+
+    runLoading();
 
     return () => {
       isActive = false;
@@ -164,7 +222,7 @@ export function Loading({ children, fonts }: LoadingProps) {
   }, []);
 
   useEffect(() => {
-    if (isReady || reduceMotion) {
+    if (displayMode !== "boot" || isReady || reduceMotion) {
       return;
     }
 
@@ -175,12 +233,15 @@ export function Loading({ children, fonts }: LoadingProps) {
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [isReady, reduceMotion]);
+  }, [displayMode, isReady, reduceMotion]);
 
   return (
     <LoadingReadyContext.Provider value={isReady}>
       {children}
-      {isReady ? null : (
+      {shouldBlockContent ? (
+        <div className={styles.overlay} aria-hidden="true" />
+      ) : null}
+      {shouldShowOverlay ? (
         <div
           className={`${styles.overlay} ${isClearing ? styles.overlayClearing : ""}`}
           role="status"
@@ -219,9 +280,25 @@ export function Loading({ children, fonts }: LoadingProps) {
             </ul>
           </div>
         </div>
-      )}
+      ) : null}
     </LoadingReadyContext.Provider>
   );
+}
+
+function hasSeenBootAnimation() {
+  try {
+    return window.sessionStorage.getItem(BOOT_ANIMATION_SESSION_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function markBootAnimationSeen() {
+  try {
+    window.sessionStorage.setItem(BOOT_ANIMATION_SESSION_KEY, "true");
+  } catch {
+    return;
+  }
 }
 
 function getFontStatusClassName(status: LoadingFontState["status"]) {
