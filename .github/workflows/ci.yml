@@ -30,6 +30,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Check SoukouMincho subset
+        run: |
+          pnpm subset:font:soukou
+          git diff --exit-code -- src/app/fonts/soukou-mincho-corpus.txt src/app/fonts/SoukouMincho-subset.woff2
+
       - name: Check formatting
         run: pnpm format:check
 
