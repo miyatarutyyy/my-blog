@@ -1,0 +1,139 @@
+import { createRequire } from "node:module";
+import { brotliCompressSync, constants, gzipSync } from "node:zlib";
+import { readFile, writeFile } from "node:fs/promises";
+import { statSync } from "node:fs";
+import path from "node:path";
+import process from "node:process";
+
+const require = createRequire(import.meta.url);
+const subsetFont = require("subset-font");
+const fontkit = require("fontkit");
+
+const projectRoot = process.cwd();
+const inputFontPath = path.join(projectRoot, "src/app/fonts/SoukouMincho.ttf");
+const corpusPath = path.join(
+  projectRoot,
+  "src/app/fonts/soukou-mincho-corpus.txt"
+);
+const outputFontPath = path.join(
+  projectRoot,
+  "src/app/fonts/SoukouMincho-subset.woff2"
+);
+
+const requiredWhitespace = " ";
+
+const inputFont = await readFile(inputFontPath);
+const corpus = await readCorpus(corpusPath);
+const subsetText = uniqueCharacters(`${corpus}${requiredWhitespace}`).join("");
+
+if (subsetText.length === 0) {
+  throw new Error(`Corpus is empty: ${path.relative(projectRoot, corpusPath)}`);
+}
+
+assertFontHasCharacters(inputFont, subsetText, "source font");
+
+const subsetBuffer = await subsetFont(inputFont, subsetText, {
+  targetFormat: "woff2",
+});
+
+assertFontHasCharacters(subsetBuffer, subsetText, "subset font");
+
+await writeFile(outputFontPath, subsetBuffer);
+
+const originalSize = statSync(inputFontPath).size;
+const subsetSize = statSync(outputFontPath).size;
+const gzipOriginalSize = gzipSync(inputFont).byteLength;
+const gzipSubsetSize = gzipSync(subsetBuffer).byteLength;
+const brotliOriginalSize = brotliSize(inputFont);
+const brotliSubsetSize = brotliSize(subsetBuffer);
+
+console.log("SoukouMincho subset generated.");
+console.log(`Corpus characters: ${Array.from(subsetText).length}`);
+console.log(
+  `Input: ${relativePath(inputFontPath)} (${formatBytes(originalSize)})`
+);
+console.log(
+  `Output: ${relativePath(outputFontPath)} (${formatBytes(subsetSize)})`
+);
+console.log(`Raw reduction: ${formatReduction(originalSize, subsetSize)}`);
+console.log(
+  `Gzip estimate: ${formatBytes(gzipOriginalSize)} -> ${formatBytes(
+    gzipSubsetSize
+  )} (${formatReduction(gzipOriginalSize, gzipSubsetSize)})`
+);
+console.log(
+  `Brotli estimate: ${formatBytes(brotliOriginalSize)} -> ${formatBytes(
+    brotliSubsetSize
+  )} (${formatReduction(brotliOriginalSize, brotliSubsetSize)})`
+);
+
+async function readCorpus(filePath) {
+  const text = await readFile(filePath, "utf8");
+
+  return text
+    .split(/\r?\n/)
+    .filter((line) => !line.trimStart().startsWith("#"))
+    .join("\n")
+    .trim();
+}
+
+function uniqueCharacters(text) {
+  return [...new Set(Array.from(text))];
+}
+
+function assertFontHasCharacters(fontBuffer, text, label) {
+  const font = fontkit.create(fontBuffer);
+  const missingCharacters = uniqueCharacters(text).filter((character) => {
+    const codePoint = character.codePointAt(0);
+
+    return codePoint === undefined || !font.hasGlyphForCodePoint(codePoint);
+  });
+
+  if (missingCharacters.length > 0) {
+    throw new Error(
+      `${label} is missing glyphs: ${missingCharacters
+        .map(formatCharacter)
+        .join(", ")}`
+    );
+  }
+}
+
+function brotliSize(buffer) {
+  return brotliCompressSync(buffer, {
+    params: {
+      [constants.BROTLI_PARAM_QUALITY]: 11,
+    },
+  }).byteLength;
+}
+
+function formatCharacter(character) {
+  const codePoint = character.codePointAt(0);
+  const code = codePoint?.toString(16).toUpperCase().padStart(4, "0");
+
+  return `${JSON.stringify(character)} (U+${code})`;
+}
+
+function formatBytes(bytes) {
+  if (bytes < 1024) {
+    return `${bytes} B`;
+  }
+
+  if (bytes < 1024 * 1024) {
+    return `${(bytes / 1024).toFixed(2)} KiB`;
+  }
+
+  return `${(bytes / 1024 / 1024).toFixed(2)} MiB`;
+}
+
+function formatReduction(originalSize, optimizedSize) {
+  const savedBytes = originalSize - optimizedSize;
+  const savedRatio = originalSize === 0 ? 0 : savedBytes / originalSize;
+
+  return `${formatBytes(savedBytes)} smaller (${(savedRatio * 100).toFixed(
+    2
+  )}% reduction)`;
+}
+
+function relativePath(filePath) {
+  return path.relative(projectRoot, filePath);
+}

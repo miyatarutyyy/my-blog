@@ -11,6 +11,7 @@
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "test:e2e:prod": "playwright test --config playwright.production.config.ts",
+    "subset:font:soukou": "node scripts/subset-soukou-mincho.mjs",
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
@@ -32,7 +33,9 @@
     "babel-plugin-react-compiler": "1.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.2.12",
+    "fontkit": "^2.0.4",
     "prettier": "^3.9.6",
+    "subset-font": "^2.5.0",
     "typescript": "^5",
     "vitest": "^4.1.10"
   }

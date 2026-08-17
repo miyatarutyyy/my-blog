@@ -1,0 +1,22 @@
+# Phase 1 manual corpus for SoukouMincho subset generation.
+# Keep this file human-curated until Phase 2 introduces automatic collection.
+
+名称未定
+たるてぃのブログサイト
+404
+NOT FOUND
+[ HOME へ戻る ]
+不在
+永
+SoukouMincho
+
+# SKK typing intermediate text and markers.
+めいしょう
+みてい
+たるてぃの
+ぶろぐさいと
+もど
+▽▼
+
+# ASCII characters used by labels, status text, and bracketed links.
+ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789[] -
