@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 
+import { TransitionLink } from "@/src/components/PageTransition";
 import { SkkTyping } from "@/src/components/SkkTyping";
 
 import styles from "./not-found.module.css";
@@ -118,13 +118,13 @@ export function NotFoundAnimation() {
       >
         在
       </span>
-      <Link className={styles.homeLink} href="/">
+      <TransitionLink className={styles.homeLink} href="/">
         <SkkTyping
           label="[ HOME へ戻る ]"
           plan={homeLinkTypingPlan}
           onComplete={() => markTypingComplete("homeLink")}
         />
-      </Link>
+      </TransitionLink>
     </div>
   );
 }
