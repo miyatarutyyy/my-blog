@@ -92,11 +92,11 @@ export default function Home() {
     <div className={styles.page}>
       <main className={styles.main}>
         <HomeIntro>
-          <h1>
+          <h1 data-font="soukou">
             <SkkTyping label="名称未定" plan={titleTypingPlan} />
           </h1>
           <span className={styles.divider} aria-hidden="true" />
-          <p>
+          <p data-font="soukou">
             <SkkTyping
               label="たるてぃのブログサイト"
               plan={subtitleTypingPlan}

@@ -34,6 +34,10 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+[data-font="soukou"] {
+  font-family: var(--font-soukou-mincho), var(--font-geist-sans), serif;
+}
+
 * {
   box-sizing: border-box;
   padding: 0;

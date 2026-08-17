@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 const soukouMincho = localFont({
-  src: "./fonts/SoukouMincho.ttf",
+  src: "./fonts/SoukouMincho-subset.woff2",
   variable: "--font-soukou-mincho",
   display: "swap",
 });
