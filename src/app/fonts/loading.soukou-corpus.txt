@@ -1,0 +1,7 @@
+# Text used by the font loading UI before route content is visible.
+
+永
+SoukouMincho
+
+# Keep small ASCII coverage for loading labels and bracketed display text.
+ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789[] -

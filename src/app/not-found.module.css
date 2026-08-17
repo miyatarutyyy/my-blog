@@ -6,7 +6,6 @@
   padding: var(--space-page-block) var(--space-page-inline);
   background-color: var(--color-background);
   color: var(--color-text-primary);
-  font-family: var(--font-soukou-mincho), var(--font-geist-sans), serif;
   text-align: center;
 }
 

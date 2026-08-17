@@ -88,7 +88,7 @@ export function NotFoundAnimation() {
   };
 
   return (
-    <div className={notFoundMarkClassName}>
+    <div className={notFoundMarkClassName} data-font="soukou">
       <span
         className={`${styles.sideGlyph} ${styles.leftGlyph}`}
         aria-hidden="true"
