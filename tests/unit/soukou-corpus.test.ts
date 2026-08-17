@@ -100,7 +100,8 @@ describe("SoukouMincho corpus collector", () => {
 
     const result = await collectSoukouCorpus({ projectRoot });
 
-    expect(result.corpus).toContain("名称未定");
+    expect(result.corpus).toContain("名");
+    expect(result.corpus).toContain("未");
     expect(result.corpus).toContain("永");
   });
 });

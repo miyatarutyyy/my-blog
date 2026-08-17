@@ -33,7 +33,7 @@ export async function collectSoukouCorpus({
   }
 
   return {
-    corpus: uniqueTexts(collectedTexts).join("\n"),
+    corpus: uniqueCharacters(collectedTexts.join("\n")).join(""),
     tsxFiles,
     fragmentFiles,
   };
@@ -385,8 +385,12 @@ function normalizeJsxText(text) {
     .join("");
 }
 
-function uniqueTexts(texts) {
-  return [...new Set(texts.filter((text) => text !== ""))];
+function uniqueCharacters(text) {
+  return [...new Set(Array.from(text))]
+    .filter((character) => character !== "\n" && character !== "\r")
+    .sort((a, b) => {
+      return a.codePointAt(0) - b.codePointAt(0);
+    });
 }
 
 function formatLocation(sourceFile, node) {
