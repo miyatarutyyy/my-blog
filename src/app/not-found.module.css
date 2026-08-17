@@ -53,6 +53,8 @@
   );
   --home-link-block-size: 24px;
   --side-glyph-reveal-duration: 200ms;
+  --divider-reveal-delay: 400ms;
+  --divider-reveal-duration: 700ms;
 
   display: grid;
   place-self: center;
@@ -151,6 +153,10 @@
   height: 1px;
   justify-self: center;
   background-color: var(--color-text-primary);
+  transform: scaleX(0);
+  transform-origin: left center;
+  animation: divider-reveal var(--divider-reveal-duration) linear
+    var(--divider-reveal-delay) both;
 }
 
 .message {
@@ -196,9 +202,24 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .divider {
+    animation: none;
+    transform: scaleX(1);
+  }
+
   .notFoundMarkReveal .sideGlyph::after {
     animation: none;
     transform: translateY(100%);
+  }
+}
+
+@keyframes divider-reveal {
+  from {
+    transform: scaleX(0);
+  }
+
+  to {
+    transform: scaleX(1);
   }
 }
 
