@@ -89,7 +89,7 @@ const socialsLinkTypingPlan = [
 
 export default function Home() {
   return (
-    <div className={styles.page}>
+    <div className={styles.hero}>
       <main className={styles.main}>
         <HomeIntro>
           <h1 data-font="soukou">

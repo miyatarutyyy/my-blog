@@ -1,0 +1,20 @@
+/*
+ * ページ本体の横方向レイアウト（幅いっぱい→上限で頭打ち→中央寄せ→左右のすき間）を
+ * 一箇所に集約する共有モジュール。各ページの .main が composes で content / article を借りる。
+ */
+.base {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--space-page-inline);
+  padding-block: var(--space-page-block);
+}
+
+.content {
+  composes: base;
+  max-width: var(--width-content);
+}
+
+.article {
+  composes: base;
+  max-width: var(--width-article);
+}
