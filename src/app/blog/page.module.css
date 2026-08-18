@@ -1,12 +1,9 @@
 .main {
-  width: 100%;
-  max-width: var(--width-content);
-  margin: 0 auto;
-  padding: var(--space-page-block) var(--space-page-inline);
+  composes: content from "../container.module.css";
 }
 
 .title {
-  font-size: 32px;
+  font-size: clamp(32px, 6vw, 40px);
   font-weight: 600;
   line-height: 40px;
   letter-spacing: 0;
@@ -42,15 +39,4 @@
   font-size: 14px;
   line-height: 20px;
   color: var(--color-text-secondary);
-}
-
-@media (min-width: 768px) {
-  .main {
-    padding: 80px 60px;
-  }
-
-  .title {
-    font-size: 40px;
-    line-height: 48px;
-  }
 }

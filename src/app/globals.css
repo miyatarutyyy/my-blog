@@ -11,6 +11,15 @@
   --space-page-block: 48px;
   --width-content: 800px;
   --width-article: 720px;
+  --font-size-body: 16px;
+  --line-height-body: 1.75;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --space-page-block: 80px;
+    --font-size-body: 18px;
+  }
 }
 
 html {
