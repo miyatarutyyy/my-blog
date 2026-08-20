@@ -280,4 +280,29 @@ describe("createPostsRepository", () => {
       'Post "missing-date" is missing required #+DATE metadata.'
     );
   });
+
+  test("getPosts reports every invalid Org file in a single error", async () => {
+    const contentDirectory = await createTempContentDirectory();
+    await writePost(contentDirectory, "untitled", "* Body\n");
+    await writePost(
+      contentDirectory,
+      "missing-date",
+      "#+TITLE: Missing Date\n\n* Body\n"
+    );
+
+    const posts = createPostsRepository(contentDirectory);
+
+    const error = await posts.getPosts().then(
+      () => null,
+      (reason: unknown) => reason
+    );
+
+    expect(error).toBeInstanceOf(Error);
+    expect((error as Error).message).toContain(
+      'Post "untitled" is missing required #+TITLE metadata.'
+    );
+    expect((error as Error).message).toContain(
+      'Post "missing-date" is missing required #+DATE metadata.'
+    );
+  });
 });

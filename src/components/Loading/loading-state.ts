@@ -65,14 +65,6 @@ export function getNextLoadingFrame(frame: number) {
   return (frame + 1) % LOADING_STATUS_LABELS.length;
 }
 
-export function isFontLoadSettled(font: LoadingFontState) {
-  return (
-    font.status === "ready" ||
-    font.status === "timeout" ||
-    font.status === "failed"
-  );
-}
-
 export function getInitialLoadingMode({
   hasSeenBootAnimation,
   areWebFontsReady,
