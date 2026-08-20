@@ -9,8 +9,16 @@
   text-align: center;
 }
 
+.content {
+  composes: content from "./container.module.css";
+  display: grid;
+  overflow: hidden;
+  place-items: center;
+  place-self: center;
+}
+
 .notFoundMark {
-  --layout-width: min(100%, 92vw, 960px);
+  --layout-width: 100%;
   --center-column-width: minmax(132px, 52%);
   --side-glyph-size: clamp(56px, 18vw, 176px);
   --golden-ratio: 1.6;
@@ -20,7 +28,7 @@
   --status-line-height: 0.8;
   --status-cap-offset: -0.08em;
   --message-text-width: var(--divider-width);
-  --divider-width: 40vw;
+  --divider-width: min(40vw, calc(var(--width-content) / 2.5));
   --divider-reference-height: calc(
     var(--divider-width) * var(--status-block-ratio)
   );
