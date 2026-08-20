@@ -37,11 +37,27 @@ const subtitleTypingPlan = [
   },
 ] as const;
 
-const blogLinkTypingPlan = [
+const openBracketTypingPlan = [
   {
     mode: "literal",
-    input: "[ ",
+    input: "[",
   },
+] as const;
+
+const closeBracketTypingPlan = [
+  {
+    mode: "literal",
+    input: "]",
+  },
+] as const;
+
+const linkTypingDelays = {
+  openBracket: 400,
+  label: 520,
+  closeBracket: 2225,
+} as const;
+
+const blogLinkTypingPlan = [
   {
     input: "kizi",
     reading: "きじ",
@@ -56,17 +72,9 @@ const blogLinkTypingPlan = [
     convert: true,
     candidates: ["一覧"],
   },
-  {
-    mode: "literal",
-    input: " ]",
-  },
 ] as const;
 
 const socialsLinkTypingPlan = [
-  {
-    mode: "literal",
-    input: "[ ",
-  },
   {
     input: "gaibu",
     reading: "がいぶ",
@@ -80,10 +88,6 @@ const socialsLinkTypingPlan = [
     output: "接続",
     convert: true,
     candidates: ["接続"],
-  },
-  {
-    mode: "literal",
-    input: " ]",
   },
 ] as const;
 
@@ -102,12 +106,52 @@ export default function Home() {
               plan={subtitleTypingPlan}
             />
           </p>
-          <div className={styles.links}>
-            <TransitionLink href="/blog">
-              <SkkTyping label="[ 記事一覧 ]" plan={blogLinkTypingPlan} />
+          <div className={styles.links} data-font="soukou">
+            <TransitionLink className={styles.linkItem} href="/blog">
+              <span className={styles.linkBracket} aria-hidden="true">
+                <SkkTyping
+                  label="["
+                  plan={openBracketTypingPlan}
+                  startDelayMs={linkTypingDelays.openBracket}
+                />
+              </span>
+              <span className={styles.linkLabel}>
+                <SkkTyping
+                  label="記事一覧"
+                  plan={blogLinkTypingPlan}
+                  startDelayMs={linkTypingDelays.label}
+                />
+              </span>
+              <span className={styles.linkBracket} aria-hidden="true">
+                <SkkTyping
+                  label="]"
+                  plan={closeBracketTypingPlan}
+                  startDelayMs={linkTypingDelays.closeBracket}
+                />
+              </span>
             </TransitionLink>
-            <TransitionLink href="/socials">
-              <SkkTyping label="[ 外部接続 ]" plan={socialsLinkTypingPlan} />
+            <TransitionLink className={styles.linkItem} href="/socials">
+              <span className={styles.linkBracket} aria-hidden="true">
+                <SkkTyping
+                  label="["
+                  plan={openBracketTypingPlan}
+                  startDelayMs={linkTypingDelays.openBracket}
+                />
+              </span>
+              <span className={styles.linkLabel}>
+                <SkkTyping
+                  label="外部接続"
+                  plan={socialsLinkTypingPlan}
+                  startDelayMs={linkTypingDelays.label}
+                />
+              </span>
+              <span className={styles.linkBracket} aria-hidden="true">
+                <SkkTyping
+                  label="]"
+                  plan={closeBracketTypingPlan}
+                  startDelayMs={linkTypingDelays.closeBracket}
+                />
+              </span>
             </TransitionLink>
           </div>
         </HomeIntro>

@@ -28,6 +28,7 @@ type SkkTypingProps = {
   plan: SkkInputPlan;
   className?: string;
   onComplete?: () => void;
+  startDelayMs?: number;
 };
 
 export function SkkTyping({
@@ -35,6 +36,7 @@ export function SkkTyping({
   plan,
   className,
   onComplete,
+  startDelayMs = START_DELAY_MS,
 }: SkkTypingProps) {
   const rootRef = useRef<HTMLSpanElement>(null);
   const hasPlayedRef = useRef(false);
@@ -93,7 +95,7 @@ export function SkkTyping({
         hasPlayedRef.current = true;
         setPlaybackStatus("playing");
         setFrameIndex(0);
-      }, START_DELAY_MS);
+      }, startDelayMs);
     };
 
     const animationFrame = requestAnimationFrame(() => {
@@ -119,7 +121,7 @@ export function SkkTyping({
       cancelAnimationFrame(animationFrame);
       stopTimers();
     };
-  }, [compileResult, loadingReady, reduceMotion]);
+  }, [compileResult, loadingReady, reduceMotion, startDelayMs]);
 
   useEffect(() => {
     if (

@@ -2,4 +2,4 @@
 # Add static SoukouMincho UI text with data-font="soukou".
 # Add hard-to-infer text to *.soukou-corpus.txt fragments.
 
- -0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz▼▽ぃいうぐさしたてとどのぶへみめもょるろイグサトブロ不名在定戻未永称
+ -0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ[]abcdefghijklmnopqrstuvwxyz▼▽ぃいうがきくぐさしじせぞたちつてとどのぶへみめもょらるろんイグサトブロ一不事名在地外定戻接未永生称続覧記部

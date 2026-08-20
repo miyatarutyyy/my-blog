@@ -5,7 +5,9 @@ import styles from "./not-found.module.css";
 export default function NotFound() {
   return (
     <main className={styles.main} aria-label="Page not found">
-      <NotFoundAnimation />
+      <div className={styles.content}>
+        <NotFoundAnimation />
+      </div>
     </main>
   );
 }
