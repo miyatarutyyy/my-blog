@@ -126,13 +126,28 @@ export function createPostsRepository(baseDirectory: string): PostsRepository {
   async function getPosts() {
     const slugs = await getPostSlugs();
 
-    const posts = await Promise.all(
+    const results = await Promise.allSettled(
       slugs.map(async (slug) => {
         return getPost(slug);
       })
     );
 
-    return posts
+    // 不正な記事があってもここで即座に throw せず、
+    // 全記事の検証結果を集めてからまとめてビルドを失敗させる。
+    const errors = results
+      .filter((result) => result.status === "rejected")
+      .map((result) => (result as PromiseRejectedResult).reason);
+
+    if (errors.length > 0) {
+      const messages = errors.map((error) => {
+        return error instanceof Error ? error.message : String(error);
+      });
+
+      throw new Error(`Invalid posts found:\n${messages.join("\n")}`);
+    }
+
+    return results
+      .map((result) => (result as PromiseFulfilledResult<Post | null>).value)
       .filter((post): post is Post => {
         return post != null;
       })
