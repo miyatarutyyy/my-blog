@@ -34,6 +34,18 @@ describe("expandRomajiKeystrokes", () => {
     ).toEqual(["h", "ほ", "ほn", "ほん"]);
   });
 
+  test("collapses nn into a single 撥音", () => {
+    expect(
+      expandRomajiKeystrokes("onna", "おんあ").map((state) => state.text)
+    ).toEqual(["お", "おn", "おん", "おんあ"]);
+  });
+
+  test("treats word-final nn as one 撥音", () => {
+    expect(
+      expandRomajiKeystrokes("hann", "はん").map((state) => state.text)
+    ).toEqual(["h", "は", "はn", "はん"]);
+  });
+
   test("expands thi as ティ-style small vowel input", () => {
     expect(
       expandRomajiKeystrokes("taruthi", "たるてぃ").map((state) => state.text)

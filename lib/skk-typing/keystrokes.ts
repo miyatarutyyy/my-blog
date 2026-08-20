@@ -59,6 +59,13 @@ function resolvePending({
     if (currentPending.length >= 2 && currentPending.startsWith("n")) {
       const rest = currentPending.slice(1);
 
+      // "nn" は「ん」の明示的な確定。2 文字とも消費する。
+      if (rest.startsWith("n")) {
+        currentResolved += "ん";
+        currentPending = currentPending.slice(2);
+        continue;
+      }
+
       if (!isRomajiRulePrefix(currentPending) && isRomajiRulePrefix(rest)) {
         currentResolved += "ん";
         currentPending = rest;
