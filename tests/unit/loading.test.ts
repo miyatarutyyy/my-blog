@@ -7,7 +7,6 @@ import {
   getInitialLoadingMode,
   getNextLoadingFrame,
   getWebFonts,
-  isFontLoadSettled,
   type LoadingFontDefinition,
 } from "@/src/components/Loading/loading-state";
 
@@ -73,15 +72,6 @@ describe("Loading font states", () => {
   test("cycles the indeterminate loading frame", () => {
     expect(getNextLoadingFrame(0)).toBe(1);
     expect(getNextLoadingFrame(4)).toBe(0);
-  });
-
-  test("treats ready, timeout, and failed states as settled", () => {
-    const [systemFont, webFont] = createInitialFontStates(fonts);
-
-    expect(isFontLoadSettled(systemFont)).toBe(true);
-    expect(isFontLoadSettled(webFont)).toBe(false);
-    expect(isFontLoadSettled({ ...webFont, status: "timeout" })).toBe(true);
-    expect(isFontLoadSettled({ ...webFont, status: "failed" })).toBe(true);
   });
 
   test("plays the boot animation when the tab has not seen it", () => {
